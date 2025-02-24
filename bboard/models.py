@@ -7,8 +7,7 @@ class Bb(models.Model):
     published = models.DateTimeField(auto_now_add=True, db_index=True,
                                      verbose_name='Опубликовано')
 
-
-class Meta:
-    verbose_name_plural='Объявления'
-    verbose_name = 'Объявление'
-    ordering=['-published']
+    class Meta:
+        verbose_name_plural='Объявления'
+        verbose_name = 'Объявление'
+        ordering=['-published']
