@@ -5,11 +5,12 @@
   <title>Страница с объявлениями</title>
 </head>
 <body>
-  <h1>Объявления</h1>
+  <h1>{{ title }}</h1>
   {% for bb in bbs %}
   <div>
       <h2>{{ bb.title }}</h2>
       <p>{{ bb.content }}</p>
+      <p>{{ bb.price }}</p>
       <p>{{ bb.published|date:"D.m.Y H:i:s" }}</p>
   </div>
   {% endfor %}
