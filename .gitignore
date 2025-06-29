@@ -3,7 +3,7 @@
 *.pot
 *.pyc
 __pycache__
-db.sqlite3
+FirstProject/db.sqlite3
 media
 
 .idea/
@@ -100,7 +100,7 @@ celerybeat-schedule.*
 *.sage.py
 
 # Environments
-.env
+FirstProject/.env
 .venv
 env/
 venv/
