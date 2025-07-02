@@ -7,7 +7,6 @@ class Bb(models.Model):
         ("b", "buy"),
         ("s", "sell"),
         ("t", "trade"),
-        (None, "Choose type of published announcement"),
     )
     kind = models.CharField(max_length=1, choices=KINDS, blank=True)
 
@@ -25,7 +24,7 @@ class Bb(models.Model):
         TRADE = 3, "Trade"
 
     kind3 = models.SmallIntegerField(
-        max_length=1, choices=IntegerKinds.choices, default=IntegerKinds.SELL
+        choices=IntegerKinds.choices, default=IntegerKinds.SELL
     )
 
 
@@ -41,26 +40,30 @@ class Measure(models.Model):
 class Rubric(models.Model):
     show = models.BooleanField(default=False)
 
-
-class Board(models.Model):
+    class Meta:
+        db_table = "rubric"
 
     @staticmethod
     def get_first_rubric():
         return Rubric.objects.first()
 
+
+class Board(models.Model):
+
     rubric = models.ForeignKey(
         Rubric,
-        on_delete=models.SET(Rubric.get_first_rubric()),
+        on_delete=models.SET(Rubric.get_first_rubric),
         limit_choices_to={"show": True},
         related_name="+",
         related_query_name="entry",
     )
 
-    first_rubric = Rubric.objects.first()
-    # получаем связанные объявления, если related_name='entries', '+' - не создаем связь
-    bbs = first_rubric.entries.all()
+    def get_bbs(self):
+        return self.rubric.entry.all()
 
-    rubrics = Rubric.objects.filter(entry__title="Home")
+    @staticmethod
+    def get_home_rubrics():
+        return Rubric.objects.filter(entry__title="Home")
 
 
 class AdvUser(models.Model):
@@ -75,3 +78,25 @@ class Spare(models.Model):
 class Machine(models.Model):
     name = models.CharField(max_length=30)
     spares = models.ManyToManyField(Spare)
+
+
+class Magazine(models.Model):
+    title = models.CharField(max_length=30)
+    published = models.DateTimeField(auto_now_add=True)
+    price = models.FloatField(default=0)
+    rubric = models.ForeignKey("Rubric", on_delete=models.PROTECT)
+
+    class Meta:
+        ordering = ["-published", "title"]
+        unique_together = (
+            ("title", "published"),
+            ("title", "price"),
+        )
+        get_latest_by = "published"
+        indexes = [
+            models.Index(
+                fields=["title"],
+                name="%(app_label)s_%(class)s_main",
+                condition=models.Q(price__lte=1000),
+            )
+        ]
