@@ -22,7 +22,12 @@ class Bb(models.Model):
     content = models.TextField(blank=True, null=True, default=None)
     price = models.IntegerField(blank=True, null=True)
     rubric = models.ForeignKey(
-        Rubric, on_delete=models.PROTECT, blank=True, null=True, default=None
+        Rubric,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+        default=None,
+        related_name="entries",
     )
 
     KINDS = (
@@ -106,7 +111,7 @@ class Spare(models.Model):
 
 class Machine(models.Model):
     name = models.CharField(max_length=30)
-    spares = models.ManyToManyField(Spare)
+    spares = models.ManyToManyField(Spare, related_name="machines")
 
     def clean(self):
         errors = {}

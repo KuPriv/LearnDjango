@@ -14,4 +14,10 @@ urlpatterns = [
     path("try_bulk_update", views.try_bulk_update, name="try_bulk_update"),
     path("clear_bb_content", views.clear_bb_content, name="clear_bb_content"),
     path("check_full_clean", views.check_full_clean, name="check_full_clean"),
+    path("just_print_results", views.just_print_results, name="just_print_results"),
+    path(
+        "access_to_related_records",
+        views.access_to_related_records,
+        name="access_to_related_records",
+    ),
 ]

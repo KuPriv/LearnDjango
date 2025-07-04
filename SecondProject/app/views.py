@@ -50,9 +50,8 @@ def ManyToMany(request):
     m1 = Machine.objects.create(name="SameAsWell")
     m2 = Machine.objects.create(name="Говновоз")
     m1.spares.add(s1, s2)
-    print(m1.spares.all())
-    s1.machine_set.all()
     m1.spares.add(s3)
+    s1.machine_set.all()
     return HttpResponse(m1.spares.all())
 
 
@@ -104,4 +103,58 @@ def check_full_clean(request):
     # Валидация модели
     b = Bb()
     b.full_clean()
+    return HttpResponse(" ")
+
+
+def just_print_results(request):
+    b = Bb.objects.all()
+    b_cor = Bb.objects.get(title="Палясос")
+    b_cor.kind = "s"
+    b_cor.kind2 = "b"
+    b_cor.save()
+    print(b_cor.get_kind_display())
+    print(b_cor)
+    m = Measure.objects.first()
+    print(m.measurement)
+    print(m.get_measurement_display())
+
+    return HttpResponse(b_cor)
+
+
+def access_to_related_records(request):
+    # связь один ко многим
+    print("ONE-TO-MANY")
+    r = Rubric.objects.get(name="Мяу")
+    print("all ->")
+    # for bb in r.bb_set.all():
+    for bb in r.entries.all():
+        print(bb)
+    print("filter ->")
+    # for bb in r.bb_set.filter(price__lt=1000):
+    for bb in r.entries.filter(price__lt=1000):
+        print(bb)
+    # entries - задаем имя в related_name в models.py
+
+    # связь один к одному
+    print("ONE-TO-ONE")
+    au = AdvUser.objects.first()
+    print(au.user, au.user.username)
+    u = User.objects.first()
+    print(f"{u.advuser = }")
+
+    # связь многие со многими
+    print("MANY-TO-MANY")
+    m = Machine.objects.get(pk=11)
+    print(m.name)
+    for s in m.spares.all():
+        print(s.name)
+
+    s = Spare.objects.get(name="Винтик")
+    for m in s.machines.all():
+        print(m.name)
+
+    """s2 = Spare.objects.get(name="Гайка")
+    for m in s2.machine_set.all():
+        print(m.name)"""
+
     return HttpResponse(" ")
