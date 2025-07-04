@@ -1,6 +1,7 @@
-from django.shortcuts import render
+import sys
+import logging
+
 from django.http import HttpResponse
-from django.contrib.auth.models import User
 
 from .models import *
 
@@ -158,3 +159,44 @@ def access_to_related_records(request):
         print(m.name)"""
 
     return HttpResponse(" ")
+
+
+def check_other_functions(request):
+    s = ""
+    for r in Rubric.objects.all():
+        s += r.name + " "
+        logging.warning(r.name)
+
+    print("//////////////")
+    r = Rubric.objects.get(name="Мяу")
+    for bb in r.entries.all():
+        logging.warning(bb.title)
+    print("///////////")
+    # тк есть get_latest_by можно вызвать без параметров
+    m = Magazine.objects.earliest()
+    logging.warning(m.title)
+    logging.warning(Magazine.objects.latest().title)
+    logging.warning(Bb.objects.all()[0].pk)
+    r = Rubric.objects.get(name="Мебель")
+    logging.warning(r.board_set.all()[0].pk)
+    b1 = r.board_set.get(pk=2)
+    logging.warning("%s %s " % (b1.pk, b1.title))
+    b2 = b1.get_previous_in_order()
+    logging.warning("%s %s " % (b2.pk, b2.title))
+    logging.warning(Bb.objects.count())
+    print("////////////////////")
+    m = Magazine.objects.get(pk=1)
+    logging.warning(m.title)
+    m2 = m.get_next_by_published()
+    logging.warning(m2.title)
+    m3 = m.get_next_by_published(price__lt=555)
+    logging.warning(m3.title)
+    logging.warning(m2.get_previous_by_published().title)
+    print("///////////////")
+    for b in Bb.objects.exclude(price__gte=554):
+        logging.warning(b.title)
+
+    r = Rubric.objects.get(pk=10)
+    for b in Bb.objects.filter(rubric=r, price__gte=444):
+        logging.warning(b.title)
+    return HttpResponse(s)

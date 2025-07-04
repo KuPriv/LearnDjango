@@ -82,7 +82,7 @@ class Board(models.Model):
         Rubric,
         on_delete=models.SET(Rubric.get_first_rubric),
         limit_choices_to={"show": True},
-        related_name="+",
+        # related_name="+",
         related_query_name="entry",
     )
 
