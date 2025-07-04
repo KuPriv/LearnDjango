@@ -1,3 +1,7 @@
 from django.contrib import admin
+from .models import *
 
-# Register your models here.
+admin.site.register(Rubric)
+admin.site.register(Bb)
+admin.site.register(AdvUser)
+admin.site.register(Board)

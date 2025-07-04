@@ -1,8 +1,30 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.contrib.auth.models import User
+from django.core import validators
+from django.core.validators import EmailValidator
+
+
+class Rubric(models.Model):
+    name = models.CharField(max_length=50, blank=True)
+    show = models.BooleanField(default=False)
+
+    class Meta:
+        db_table = "rubric"
+
+    @staticmethod
+    def get_first_rubric():
+        return Rubric.objects.first()
 
 
 class Bb(models.Model):
+    title = models.CharField(max_length=50)
+    content = models.TextField(blank=True, null=True, default=None)
+    price = models.IntegerField(blank=True, null=True)
+    rubric = models.ForeignKey(
+        Rubric, on_delete=models.PROTECT, blank=True, null=True, default=None
+    )
+
     KINDS = (
         ("b", "buy"),
         ("s", "sell"),
@@ -24,8 +46,19 @@ class Bb(models.Model):
         TRADE = 3, "Trade"
 
     kind3 = models.SmallIntegerField(
-        choices=IntegerKinds.choices, default=IntegerKinds.SELL
+        choices=IntegerKinds.choices, default=IntegerKinds.SELL, blank=True
     )
+
+    def __str__(self):
+        if self.rubric:
+            return "%s %s %s %s" % (
+                self.title,
+                self.content,
+                self.price,
+                self.rubric.name,
+            )
+        else:
+            return "%s %s" % (self.title, self.price)
 
 
 class Measure(models.Model):
@@ -37,18 +70,8 @@ class Measure(models.Model):
     measurement = models.FloatField(choices=Measurements.choices)
 
 
-class Rubric(models.Model):
-    show = models.BooleanField(default=False)
-
-    class Meta:
-        db_table = "rubric"
-
-    @staticmethod
-    def get_first_rubric():
-        return Rubric.objects.first()
-
-
 class Board(models.Model):
+    title = models.CharField(max_length=50, blank=True)
 
     rubric = models.ForeignKey(
         Rubric,
@@ -57,6 +80,9 @@ class Board(models.Model):
         related_name="+",
         related_query_name="entry",
     )
+
+    class Meta:
+        order_with_respect_to = "rubric"
 
     def get_bbs(self):
         return self.rubric.entry.all()
@@ -69,6 +95,9 @@ class Board(models.Model):
 class AdvUser(models.Model):
     is_activated = models.BooleanField(default=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    email = models.EmailField(
+        blank=True, validators=[EmailValidator(message="Invalid email")]
+    )
 
 
 class Spare(models.Model):
@@ -79,9 +108,16 @@ class Machine(models.Model):
     name = models.CharField(max_length=30)
     spares = models.ManyToManyField(Spare)
 
+    def clean(self):
+        errors = {}
+        if not self.name:
+            errors["name"] = ValidationError("Укажите название")
+
 
 class Magazine(models.Model):
-    title = models.CharField(max_length=30)
+    title = models.CharField(
+        max_length=30, error_messages={"invalid": "Incorrectly name"}
+    )
     published = models.DateTimeField(auto_now_add=True)
     price = models.FloatField(default=0)
     rubric = models.ForeignKey("Rubric", on_delete=models.PROTECT)
