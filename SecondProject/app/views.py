@@ -3,6 +3,8 @@ import logging
 
 from django.http import HttpResponse
 
+from django.db.models import F, Q
+
 from .models import *
 
 
@@ -132,7 +134,7 @@ def access_to_related_records(request):
         print(bb)
     print("filter ->")
     # for bb in r.bb_set.filter(price__lt=1000):
-    for bb in r.entries.filter(price__lt=1000):
+    for bb in r.entries.filter(price__lt=1000).distinct():
         print(bb)
     # entries - задаем имя в related_name в models.py
 
@@ -199,4 +201,42 @@ def check_other_functions(request):
     r = Rubric.objects.get(pk=10)
     for b in Bb.objects.filter(rubric=r, price__gte=444):
         logging.warning(b.title)
+    print("//////////")
+    for m in Magazine.objects.filter(published__week_day=6):
+        logging.warning("%s %s " % (m.title, m.published))
+    print("--------")
+    for m in Magazine.objects.filter(published__year__lte=2025):
+        logging.warning("%s %s " % (m.title, m.published))
+    print("-------")
+    # квартал года 1 - 4
+    for m in Magazine.objects.filter(published__quarter=3, title__isnull=False):
+        logging.warning("%s %s " % (m.title, m.published))
+    print("////////")
+    for b in Bb.objects.filter(rubric__name="Мяу"):
+        logging.warning(b.title)
+    print("----------")
+    for r in Rubric.objects.filter(magazine__price__lte=554):
+        logging.warning(r.name)
+    print("//////////////")
+
+    f = F("title")
+    for b in Bb.objects.filter(title__icontains=f):
+        logging.warning(b.title)
+    print("---------")
+    f = F("price")
+    for b in Bb.objects.all():
+        b.price = f / 2
+        b.save()
+    for b in Bb.objects.all():
+        logging.warning(b.price)
+    print("/////////////")
+    q = Q(rubric__name="Мяу") | Q(rubric__name="Мебель")
+    for b in Bb.objects.filter(q):
+        logging.warning(b.title)
+    print("--------")
+    q = Q(rubric__name="Мяу") & ~Q(price__lte=1)
+    for b in Bb.objects.filter(q):
+        logging.warning(b.title)
+
+    # также QuerySet поддерживает срезы!
     return HttpResponse(s)

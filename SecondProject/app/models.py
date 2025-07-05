@@ -77,7 +77,7 @@ class Measure(models.Model):
 
 class Board(models.Model):
     title = models.CharField(max_length=50, blank=True)
-
+    price = models.IntegerField(blank=True, null=True)
     rubric = models.ForeignKey(
         Rubric,
         on_delete=models.SET(Rubric.get_first_rubric),
