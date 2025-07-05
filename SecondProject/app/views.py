@@ -3,7 +3,16 @@ import logging
 
 from django.http import HttpResponse
 
-from django.db.models import F, Q
+from django.db.models import (
+    F,
+    Q,
+    Min,
+    Max,
+    Count,
+    Avg,
+    Sum,
+    IntegerField,
+)
 
 from .models import *
 
@@ -223,12 +232,12 @@ def check_other_functions(request):
     for b in Bb.objects.filter(title__icontains=f):
         logging.warning(b.title)
     print("---------")
-    f = F("price")
+    """    f = F("price")
     for b in Bb.objects.all():
         b.price = f / 2
         b.save()
     for b in Bb.objects.all():
-        logging.warning(b.price)
+        logging.warning(b.price)"""
     print("/////////////")
     q = Q(rubric__name="Мяу") | Q(rubric__name="Мебель")
     for b in Bb.objects.filter(q):
@@ -237,6 +246,58 @@ def check_other_functions(request):
     q = Q(rubric__name="Мяу") & ~Q(price__lte=1)
     for b in Bb.objects.filter(q):
         logging.warning(b.title)
-
+    print("///////")
+    for b in Bb.objects.order_by("rubric__name", "-price"):
+        logging.warning(b)
+    print("--------")
+    for b in Bb.objects.order_by("rubric__name", "-price").reverse():
+        logging.warning(b)
+    print("Получение списка полей")
+    print([b.name for b in Bb._meta.get_fields()])
+    print("//////////")
+    print(Bb.objects.aggregate(Min("price")))
+    print(Bb.objects.aggregate(max_price=Max("price")))
+    print(Bb.objects.aggregate(Min("price"), Max("price")))
+    print(Bb.objects.aggregate(diff=Max("price") - Min("price")))
     # также QuerySet поддерживает срезы!
     return HttpResponse(s)
+
+
+def check_functions_2(request):
+    for r in Rubric.objects.annotate(Count("entries")):
+        print(r.name, ": ", r.entries__count, sep=" ")
+    print("-" * 15)
+    for r in Rubric.objects.annotate(cnt=Count("entries")):
+        print(r.name, ": ", r.cnt, sep=" ")
+    print("-" * 15)
+    for r in Rubric.objects.annotate(min_bb=Min("entries")):
+        print(r.name, ": ", r.min_bb, sep=" ")
+    print("-" * 15)
+    for r in Rubric.objects.annotate(
+        cnt=Count("entries"), min_bb=Min("entries__price")
+    ).filter(cnt__gte=1):
+        print(r.name, ": ", r.min_bb, sep=" ")
+    print("-------------")
+    for r in Rubric.objects.annotate(
+        cnt=Count("entries"), filter=Q(entries__price__gt=100)
+    ):
+        print(r.name, ": ", r.cnt, sep=" ")
+    print("-----")
+    print(
+        Rubric.objects.aggregate(
+            sum_r=Sum(
+                "entries__price", output_field=IntegerField(), filter=Q(name="Мяу")
+            )
+        )
+    )
+    print("---------")
+    # Если шо distinct 3.2+ работает в aggregate
+    # о чиназес, в классе Q работают модификаторы!
+    print(
+        Bb.objects.aggregate(
+            avg=Avg(("price"), filter=Q(title__iexact="УМПАЛА"), distinct=True)
+        )
+    )
+    # Есть еще StvDev (ср. отклон.) и Variance (дисперсия)
+
+    return HttpResponse("Siiiiuuu!!!")
