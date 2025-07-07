@@ -1,7 +1,4 @@
-import sys
 import logging
-
-from django.http import HttpResponse
 
 from django.db.models import (
     F,
@@ -12,7 +9,11 @@ from django.db.models import (
     Avg,
     Sum,
     IntegerField,
+    Value,
+    ExpressionWrapper,
 )
+from django.http import HttpResponse
+from django.db.models.functions import Concat
 
 from .models import *
 
@@ -299,5 +300,22 @@ def check_functions_2(request):
         )
     )
     # Есть еще StvDev (ср. отклон.) и Variance (дисперсия)
-
     return HttpResponse("Siiiiuuu!!!")
+
+
+def calculate_fields(request):
+    for b in Bb.objects.annotate(half_price=F("price") / 2):
+        print(b.title, b.price, b.half_price)
+
+    for b in Bb.objects.annotate(
+        full_name=Concat(F("title"), Value(" ("), F("rubric__name"), Value(")"))
+    ):
+        print(b.full_name)
+    print("-" * 15)
+    for b in Bb.objects.annotate(
+        half_price=ExpressionWrapper(F("price") / 2, IntegerField())
+    ):
+        print(b.title, b.half_price)
+    print("-" * 15)
+
+    return HttpResponse("ANKARA ANKARA ANKARA")

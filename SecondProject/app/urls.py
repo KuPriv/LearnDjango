@@ -16,6 +16,7 @@ urlpatterns = [
     path("check_full_clean", views.check_full_clean, name="check_full_clean"),
     path("just_print_results", views.just_print_results, name="just_print_results"),
     path("check_functions_2", views.check_functions_2, name="check_functions_2"),
+    path("calculate_fields", views.calculate_fields, name="calculate_fields"),
     path(
         "check_other_functions",
         views.check_other_functions,
