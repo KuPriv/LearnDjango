@@ -15,6 +15,8 @@ from django.db.models import (
 )
 from django.http import HttpResponse
 from django.db.models.functions import Concat, Coalesce, Greatest, Least, Cast, StrIndex
+from django.views import View
+from django.views.generic import ListView
 
 from .models import *
 
@@ -340,3 +342,17 @@ def calculate_fields(request):
     for b in Bb.objects.annotate(stri=StrIndex("content", Value("лал"))):
         print(b.title, ": ", b.stri)
     return HttpResponse("ANKARA ANKARA ANKARA")
+
+
+class WriteSomeFunctions(View):
+
+    @staticmethod
+    def first_function(self, request):
+        ...
+        return HttpResponse("Hi!")
+
+
+class RubricListView(ListView):
+    model = Rubric
+    template_name = "index.html"
+    context_object_name = "rubrics"

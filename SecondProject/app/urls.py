@@ -1,6 +1,7 @@
 from django.urls import path
 
 from . import views
+from .views import *
 
 urlpatterns = [
     path("", views.index, name="index"),
@@ -27,4 +28,6 @@ urlpatterns = [
         views.access_to_related_records,
         name="access_to_related_records",
     ),
+    path("write_some_func/", WriteSomeFunctions.as_view(), name="write_some_func"),
+    path("rubrics/", RubricListView.as_view(), name="rubric_list"),
 ]
