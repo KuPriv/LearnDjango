@@ -11,9 +11,10 @@ from django.db.models import (
     IntegerField,
     Value,
     ExpressionWrapper,
+    CharField,
 )
 from django.http import HttpResponse
-from django.db.models.functions import Concat
+from django.db.models.functions import Concat, Coalesce, Greatest, Least, Cast, StrIndex
 
 from .models import *
 
@@ -318,4 +319,24 @@ def calculate_fields(request):
         print(b.title, b.half_price)
     print("-" * 15)
 
+    for b in Bb.objects.annotate(
+        val=Coalesce("content", "kind", Value("--empty--"), output_field=CharField())
+    ):
+        print(b.title, ": ", b.val)
+
+    print("-" * 15)
+    for b in Bb.objects.annotate(gr=Greatest("price", 500)):
+        print(b.title, ": ", b.gr)
+
+    print("-" * 15)
+    for b in Bb.objects.annotate(gr=Least("price", 500)):
+        print(b.title, ": ", b.gr)
+
+    print("-" * 15)
+    for b in Bb.objects.annotate(cast=Cast("price", CharField())):
+        print(b.title, ": ", rf"{b.cast}")
+    # Также есть Concat, Lower, Upper, Length
+    print("--------")
+    for b in Bb.objects.annotate(stri=StrIndex("content", Value("лал"))):
+        print(b.title, ": ", b.stri)
     return HttpResponse("ANKARA ANKARA ANKARA")
