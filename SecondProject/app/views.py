@@ -12,9 +12,23 @@ from django.db.models import (
     Value,
     ExpressionWrapper,
     CharField,
+    Case,
+    When,
+    Subquery,
+    OuterRef,
+    Exists,
 )
 from django.http import HttpResponse
-from django.db.models.functions import Concat, Coalesce, Greatest, Least, Cast, StrIndex
+from django.db.models.functions import (
+    Concat,
+    Coalesce,
+    Greatest,
+    Least,
+    Cast,
+    StrIndex,
+    Now,
+    Extract,
+)
 from django.views import View
 from django.views.generic import ListView
 
@@ -341,6 +355,45 @@ def calculate_fields(request):
     print("--------")
     for b in Bb.objects.annotate(stri=StrIndex("content", Value("лал"))):
         print(b.title, ": ", b.stri)
+
+    for b in Bb.objects.annotate(n=Now()):
+        print(b.title, ": ", b.n)
+
+    for m in Magazine.objects.annotate(ex=Extract("published", "year")):
+        print(m.title, ": ", m.ex)
+
+    # И еще куча разных методов однотипных (стр 159+)
+
+    for r in Rubric.objects.annotate(
+        cnt=Count("entries"),
+        cnt_s=Case(
+            When(cnt__gte=5, then=Value("Много")),
+            When(cnt__gte=3, then=Value("Средне")),
+            When(cnt__gte=1, then=Value("Мало")),
+            default=Value("Вообще нет"),
+            output_field=CharField(),
+        ),
+    ):
+        print(r.name, ": ", r.cnt, ": ", r.cnt_s)
+
+    sq = Subquery(
+        Magazine.objects.filter(rubric=OuterRef("pk"))
+        .order_by("-published")
+        .values("published")[:1]
+    )
+    for r in Rubric.objects.annotate(last_bb_date=sq):
+        print(r.name, ": ", r.last_bb_date)
+
+    subq = Exists(Magazine.objects.filter(rubric=OuterRef("pk"), price__gt=333))
+    for r in Rubric.objects.annotate(is_expensive=subq).filter(is_expensive=True):
+        print(r.name)
+
+    m1 = Magazine.objects.filter(price__gte=333).order_by()
+    m2 = Magazine.objects.filter(rubric__name="Мяу").order_by()
+    for m in m1.union(m2):
+        print(m.title, ": ", m.price)
+    # также difference и intersection
+
     return HttpResponse("ANKARA ANKARA ANKARA")
 
 
