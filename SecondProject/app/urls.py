@@ -30,4 +30,5 @@ urlpatterns = [
     ),
     path("write_some_func/", WriteSomeFunctions.as_view(), name="write_some_func"),
     path("rubrics/", RubricListView.as_view(), name="rubric_list"),
+    # re_path - шаблонные выражения, как и re в Python
 ]

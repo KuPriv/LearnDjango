@@ -394,6 +394,16 @@ def calculate_fields(request):
         print(m.title, ": ", m.price)
     # также difference и intersection
 
+    print(Bb.objects.values("title", "price", "rubric"))
+    # при вызове values без параметров будет выдан также QuerySet, но вместо имен полей модели
+    # будут поля из БД
+
+    print(Bb.objects.values_list())
+
+    print(Magazine.objects.dates("published", "day"))
+    print(Magazine.objects.dates("published", "month"))
+    print(Magazine.objects.datetimes("published", "month"))
+
     return HttpResponse("ANKARA ANKARA ANKARA")
 
 
