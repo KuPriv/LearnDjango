@@ -18,7 +18,7 @@ from django.db.models import (
     OuterRef,
     Exists,
 )
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.db.models.functions import (
     Concat,
     Coalesce,
@@ -29,9 +29,12 @@ from django.db.models.functions import (
     Now,
     Extract,
 )
+from django.shortcuts import render
+from django.urls import reverse
 from django.views import View
 from django.views.generic import ListView
 
+from .forms import BbForm
 from .models import *
 
 
@@ -419,3 +422,30 @@ class RubricListView(ListView):
     model = Rubric
     template_name = "index.html"
     context_object_name = "rubrics"
+
+
+def add_bb(request):
+    bbf = BbForm()
+    context = {"form": bbf}
+    return render(request, "app/create.html", context)
+
+
+def by_rubric(request, rubric_id):
+    bbs = Bb.objects.filter(rubric=rubric_id)
+    rubrics = Rubric.objects.all()
+    current_rubric = Rubric.objects.get(pk=rubric_id)
+    context = {"bbs": bbs, "rubrics": rubrics, "current_rubric": current_rubric}
+    return render(request, "app/by_rubric.html", context)
+
+
+def add_bb_and_save(request):
+    bbf = BbForm(request.POST)
+    if bbf.is_valid():
+        bbf.save()
+        rubric_id = bbf.cleaned_data["rubric"].pk
+        return HttpResponseRedirect(
+            reverse("app:by_rubric", kwargs={"rubric_id": rubric_id})
+        )
+    else:
+        context = {"form": bbf}
+        return render(request, "app/create.html", context)

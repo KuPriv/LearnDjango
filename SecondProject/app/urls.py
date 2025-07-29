@@ -3,6 +3,7 @@ from django.urls import path
 from . import views
 from .views import *
 
+app_name = "app"
 urlpatterns = [
     path("", views.index, name="index"),
     path("show_r", views.show_rubric, name="show_r"),
@@ -30,5 +31,8 @@ urlpatterns = [
     ),
     path("write_some_func/", WriteSomeFunctions.as_view(), name="write_some_func"),
     path("rubrics/", RubricListView.as_view(), name="rubric_list"),
+    path("add/save/", views.add_bb_and_save, name="add_bb_and_save"),
+    path("add/", views.add_bb, name="add_bb"),
+    path("<int:rubric_id>/", views.by_rubric, name="by_rubric"),
     # re_path - шаблонные выражения, как и re в Python
 ]
