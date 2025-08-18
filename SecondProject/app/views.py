@@ -1,4 +1,5 @@
 import logging
+import os
 
 from django.db.models import (
     F,
@@ -18,7 +19,13 @@ from django.db.models import (
     OuterRef,
     Exists,
 )
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import (
+    HttpResponse,
+    HttpResponseRedirect,
+    HttpResponseNotFound,
+    StreamingHttpResponse,
+    FileResponse,
+)
 from django.db.models.functions import (
     Concat,
     Coalesce,
@@ -29,9 +36,10 @@ from django.db.models.functions import (
     Now,
     Extract,
 )
-from django.shortcuts import render
-from django.urls import reverse
+from django.shortcuts import render, get_object_or_404, get_list_or_404
+from django.urls import reverse, reverse_lazy, resolve
 from django.views import View
+from django.views.decorators.http import require_http_methods
 from django.views.generic import ListView
 
 from .forms import BbForm
@@ -39,7 +47,10 @@ from .models import *
 
 
 def index(request):
-    return HttpResponse("Hello, world. You're at the app index.")
+    success_url = reverse_lazy("index")
+    resp_content = ("Здесь ", "будет ", "главная ", "страница ", "сайта!")
+    resp = StreamingHttpResponse(resp_content, content_type="text/plain; charset=utf-8")
+    return resp
 
 
 def show_rubric(request):
@@ -425,6 +436,12 @@ class RubricListView(ListView):
 
 
 def by_rubric(request, rubric_id):
+    print(
+        request.method,
+        request.scheme,
+        request.META,
+        request.encoding,
+    )
     bbs = Bb.objects.filter(rubric=rubric_id)
     rubrics = Rubric.objects.all()
     current_rubric = Rubric.objects.get(pk=rubric_id)
@@ -449,3 +466,42 @@ def add_bb_and_save(request):
         bbf = BbForm()
         context = {"form": bbf}
         return render(request, "app/create.html", context)
+
+
+def detail(request, bb_id):
+    try:
+        bb = Bb.objects.get(pk=bb_id)
+    except Bb.DoesNotExist:
+        return HttpResponseNotFound("Не существует.")
+        # HttpResponseForbidden, BadRequest, NotModifed, Done, e.t.c.
+    return HttpResponse(...)
+
+
+def detail2(request, rubric_id):
+    bb = get_object_or_404(Bb, rubric=rubric_id)
+    bbs = get_list_or_404(Bb, rubric=rubric_id)
+    return HttpResponse(...)
+
+
+def send_file(request):
+    from pathlib import Path
+
+    BASE_DIR = Path(__file__).resolve().parent.parent
+    cat_path = BASE_DIR / "media/cat.jfif"
+    return FileResponse(open(cat_path, "rb"))
+    # as_attachment=True - скачивает файл
+
+
+def check_resolve(request):
+    r = resolve("/app/rubric/7")
+    print(r.kwargs)
+    print(r.url_name)
+    print(r.view_name)
+    print(r.route)
+    print(r.app_name)
+    print(r.namespace)
+    return HttpResponse(...)
+
+
+@require_http_methods(["GET", "POST"])
+def add(request): ...
