@@ -31,8 +31,7 @@ urlpatterns = [
     ),
     path("write_some_func/", WriteSomeFunctions.as_view(), name="write_some_func"),
     path("rubrics/", RubricListView.as_view(), name="rubric_list"),
-    path("add/save/", views.add_bb_and_save, name="add_bb_and_save"),
-    path("add/", views.add_bb, name="add_bb"),
-    path("<int:rubric_id>/", views.by_rubric, name="by_rubric"),
+    path("rubric/<int:rubric_id>", views.by_rubric, name="by_rubric"),
+    path("add/", views.add_bb_and_save, name="add"),
     # re_path - шаблонные выражения, как и re в Python
 ]

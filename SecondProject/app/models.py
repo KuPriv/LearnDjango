@@ -24,7 +24,6 @@ class Bb(models.Model):
     rubric = models.ForeignKey(
         Rubric,
         on_delete=models.PROTECT,
-        blank=True,
         null=True,
         default=None,
         related_name="entries",

@@ -5,7 +5,7 @@
     <title>Здесь форма</title>
 </head>
 <body>
-<form action="{% url 'app:add_bb_and_save' %}" method="post">
+<form method="post">
     {% csrf_token %}
     {{ form.as_p }}
     <input type="submit" value="Send.">

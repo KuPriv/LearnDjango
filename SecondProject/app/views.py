@@ -424,12 +424,6 @@ class RubricListView(ListView):
     context_object_name = "rubrics"
 
 
-def add_bb(request):
-    bbf = BbForm()
-    context = {"form": bbf}
-    return render(request, "app/create.html", context)
-
-
 def by_rubric(request, rubric_id):
     bbs = Bb.objects.filter(rubric=rubric_id)
     rubrics = Rubric.objects.all()
@@ -439,13 +433,19 @@ def by_rubric(request, rubric_id):
 
 
 def add_bb_and_save(request):
-    bbf = BbForm(request.POST)
-    if bbf.is_valid():
-        bbf.save()
-        rubric_id = bbf.cleaned_data["rubric"].pk
-        return HttpResponseRedirect(
-            reverse("app:by_rubric", kwargs={"rubric_id": rubric_id})
-        )
+    if request.method == "POST":
+        bbf = BbForm(request.POST)
+        if bbf.is_valid():
+            bbf.save()
+            return HttpResponseRedirect(
+                reverse(
+                    "app:by_rubric", kwargs={"rubric_id": bbf.cleaned_data["rubric"].pk}
+                )
+            )
+        else:
+            context = {"form": bbf}
+            return render(request, "app/create.html", context)
     else:
+        bbf = BbForm()
         context = {"form": bbf}
         return render(request, "app/create.html", context)
