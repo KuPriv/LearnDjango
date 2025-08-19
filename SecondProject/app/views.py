@@ -40,7 +40,7 @@ from django.shortcuts import render, get_object_or_404, get_list_or_404
 from django.urls import reverse, reverse_lazy, resolve
 from django.views import View
 from django.views.decorators.http import require_http_methods
-from django.views.generic import ListView
+from django.views.generic import ListView, CreateView, TemplateView
 
 from .forms import BbForm
 from .models import *
@@ -480,6 +480,8 @@ def detail(request, bb_id):
 def detail2(request, rubric_id):
     bb = get_object_or_404(Bb, rubric=rubric_id)
     bbs = get_list_or_404(Bb, rubric=rubric_id)
+    print(bb)
+    print(bbs)
     return HttpResponse(...)
 
 
@@ -505,3 +507,21 @@ def check_resolve(request):
 
 @require_http_methods(["GET", "POST"])
 def add(request): ...
+
+
+class BbCreateView(CreateView):
+    template_name = "app/create.html"
+    model = Bb
+    fields = ["title", "price", "rubric"]
+    success_url = reverse_lazy("app:by_rubric")
+
+
+class BbByRubricView(TemplateView):
+    template_name = "app/by_rubric.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["bbs"] = Bb.objects.filter(rubric=context["rubric_id"])
+        context["rubrics"] = Rubric.objects.all()
+        context["current_rubric"] = Rubric.objects.get(pk=context["rubric_id"])
+        return context
