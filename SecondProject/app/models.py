@@ -22,7 +22,11 @@ class Bb(models.Model):
     content = models.TextField(blank=True, null=True, default=None)
     price = models.IntegerField(blank=True, null=True)
     rubric = models.ForeignKey(
-        Rubric, on_delete=models.PROTECT, blank=True, null=True, default=None
+        Rubric,
+        on_delete=models.PROTECT,
+        null=True,
+        default=None,
+        related_name="entries",
     )
 
     KINDS = (
@@ -72,12 +76,12 @@ class Measure(models.Model):
 
 class Board(models.Model):
     title = models.CharField(max_length=50, blank=True)
-
+    price = models.IntegerField(blank=True, null=True)
     rubric = models.ForeignKey(
         Rubric,
         on_delete=models.SET(Rubric.get_first_rubric),
         limit_choices_to={"show": True},
-        related_name="+",
+        # related_name="+",
         related_query_name="entry",
     )
 
@@ -106,7 +110,7 @@ class Spare(models.Model):
 
 class Machine(models.Model):
     name = models.CharField(max_length=30)
-    spares = models.ManyToManyField(Spare)
+    spares = models.ManyToManyField(Spare, related_name="machines")
 
     def clean(self):
         errors = {}
