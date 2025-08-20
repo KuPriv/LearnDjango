@@ -10,6 +10,7 @@
     <p>Прайс: {{bb.price}}</p>
     <p> Контент: {{bb.content }}</p>
     <p><a href="{% url 'app:edit' pk=bb.pk %}"> Изменить </a></p>
+    <p><a href="{% url 'app:delete' pk=bb.pk %}"> Удалить </a></p>
 </body>
 {% endfor %}
 {% endblock %}

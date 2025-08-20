@@ -47,6 +47,7 @@ from django.views.generic import (
     DetailView,
     FormView,
     UpdateView,
+    DeleteView,
 )
 
 from .forms import BbForm
@@ -589,6 +590,16 @@ class BbAddView(FormView):
 class BbEditView(UpdateView):
     model = Bb
     form_class = BbForm
+    success_url = "/app"
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context["rubrics"] = Rubric.objects.all()
+        return context
+
+
+class BbDeleteView(DeleteView):
+    model = Bb
     success_url = "/app"
 
     def get_context_data(self, *args, **kwargs):
