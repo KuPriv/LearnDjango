@@ -1,17 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Рубрики</title>
-</head>
-<body>
+{% extends 'layout/basic.html' %}
+
+{% block title %} {{current_rubric.name }} {% endblock %}
+
+{% block content %}
+
 <h2>Рубрика: {{current_rubric.name }}</h2>
 {% for bb in bbs %}
 <div>
     <h2>{{ bb.title }}</h2>
-    <p>{{ bb.content }}</p>
-    <p>{{ bb.price }}</p>
+    <p>Контент: {{ bb.content }}</p>
+    <p>Цена: {{ bb.price }}</p>
+    <p><a href="{% url 'app:edit' pk=bb.pk %}"> Изменить </a></p>
 </div>
 {% endfor %}
-</body>
-</html>
+{% endblock %}

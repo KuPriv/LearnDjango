@@ -1,0 +1,13 @@
+{% extends 'layout/basic.html' %}
+{% load static %}
+
+{% block title %} Изменяем ббшку {% endblock %}
+
+{% block content %}
+<form method="post">
+  <h2> Форма ббшки</h2>
+  {% csrf_token %}
+  {{ form.as_p }}
+  <input type="submit" value="Изменить">
+</form>
+{% endblock %}

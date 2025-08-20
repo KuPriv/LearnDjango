@@ -40,17 +40,28 @@ from django.shortcuts import render, get_object_or_404, get_list_or_404
 from django.urls import reverse, reverse_lazy, resolve
 from django.views import View
 from django.views.decorators.http import require_http_methods
-from django.views.generic import ListView, CreateView, TemplateView, DetailView
+from django.views.generic import (
+    ListView,
+    CreateView,
+    TemplateView,
+    DetailView,
+    FormView,
+    UpdateView,
+)
 
 from .forms import BbForm
 from .models import *
 
 
 def index(request):
-    success_url = reverse_lazy("index")
+    """success_url = reverse_lazy("index")
     resp_content = ("Здесь ", "будет ", "главная ", "страница ", "сайта!")
-    resp = StreamingHttpResponse(resp_content, content_type="text/plain; charset=utf-8")
-    return resp
+    resp = StreamingHttpResponse(resp_content, content_type="text/html; charset=utf-8")
+    return resp"""
+    bbs = Bb.objects.all()
+    rubrics = Rubric.objects.all()
+    context = {"bbs": bbs, "rubrics": rubrics}
+    return render(request, "app/index.html", context)
 
 
 def show_rubric(request):
@@ -532,5 +543,55 @@ class BbDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context["rubrics"] = Rubric.objects.all()
+        return context
+
+
+class BbByRubricViewList(ListView):
+    template_name = "app/by_rubric.html"
+    context_object_name = "bbs"
+
+    def get_queryset(self):
+        return Bb.objects.filter(rubric=self.kwargs["rubric_id"])
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["rubrics"] = Rubric.objects.all()
+        context["current_rubric"] = Rubric.objects.get(pk=self.kwargs["rubric_id"])
+
+        return context
+
+
+class BbAddView(FormView):
+    template_name = "app/create.html"
+    form_class = BbForm
+    initial = {"price": 0.0}
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["rubrics"] = Rubric.objects.all()
+        return context
+
+    def form_valid(self, form):
+        form.save()
+        return super().form_valid(form)
+
+    def get_form(self, form_class=None):
+        self.object = super().get_form(form_class)
+        return self.object
+
+    def get_success_url(self):
+        return reverse(
+            "app:by_rubric", kwargs={"rubric_id": self.object.cleaned_data["rubric"].pk}
+        )
+
+
+class BbEditView(UpdateView):
+    model = Bb
+    form_class = BbForm
+    success_url = "/app"
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
         context["rubrics"] = Rubric.objects.all()
         return context

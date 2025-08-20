@@ -1,9 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
+{% extends 'layout/basic.html' %}
+{% load static %}
+
+{% block title %} Индекс {% endblock %}
+
+{% block content %}
+{% for bb in bbs %}
 <body>
+    <h2><a href="{% url 'app:detail' pk=bb.pk %}">{{ bb.title }}</a></h2>
+    <p>Прайс: {{bb.price}}</p>
+    <p> Контент: {{bb.content }}</p>
+    <p><a href="{% url 'app:edit' pk=bb.pk %}"> Изменить </a></p>
 </body>
-</html>
+{% endfor %}
+{% endblock %}
