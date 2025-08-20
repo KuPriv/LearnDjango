@@ -34,7 +34,7 @@ urlpatterns = [
     path("rubric/<int:rubric_id>", views.by_rubric, name="by_rubric"),
     path("add/", views.add_bb_and_save, name="add"),
     path("send_file/", views.send_file, name="send_file"),
-    path("detail/<int:bb_id>", views.detail, name="detail"),
+    path("detailw/<int:bb_id>", views.detailw, name="detailw"),
     path("detail2/<int:rubric_id>", views.detail2, name="detail2"),
     path("check_resolve", views.check_resolve, name="check_resolve"),
     path("add_class/", BbCreateView.as_view()),
@@ -43,5 +43,6 @@ urlpatterns = [
         BbByRubricView.as_view(),
         name="bb_by_rubric",
     ),
+    path("detail/<int:pk>", BbDetailView.as_view(), name="detail"),
     # re_path - шаблонные выражения, как и re в Python
 ]

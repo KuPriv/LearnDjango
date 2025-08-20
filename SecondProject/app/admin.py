@@ -1,7 +1,6 @@
 from django.contrib import admin
 from .models import *
 
-admin.site.register(Bb)
 admin.site.register(AdvUser)
 admin.site.register(Measure)
 admin.site.register(Machine)
@@ -28,4 +27,10 @@ class MagazineAdmin(admin.ModelAdmin):
 @admin.register(Board)
 class BoardAdmin(admin.ModelAdmin):
     list_display = ("title",)
+    actions = ["delete_selected"]
+
+
+@admin.register(Bb)
+class BbAdmin(admin.ModelAdmin):
+    list_display = ("title", "price", "pk")
     actions = ["delete_selected"]

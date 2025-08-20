@@ -40,7 +40,7 @@ from django.shortcuts import render, get_object_or_404, get_list_or_404
 from django.urls import reverse, reverse_lazy, resolve
 from django.views import View
 from django.views.decorators.http import require_http_methods
-from django.views.generic import ListView, CreateView, TemplateView
+from django.views.generic import ListView, CreateView, TemplateView, DetailView
 
 from .forms import BbForm
 from .models import *
@@ -468,7 +468,7 @@ def add_bb_and_save(request):
         return render(request, "app/create.html", context)
 
 
-def detail(request, bb_id):
+def detailw(request, bb_id):
     try:
         bb = Bb.objects.get(pk=bb_id)
     except Bb.DoesNotExist:
@@ -524,4 +524,13 @@ class BbByRubricView(TemplateView):
         context["bbs"] = Bb.objects.filter(rubric=context["rubric_id"])
         context["rubrics"] = Rubric.objects.all()
         context["current_rubric"] = Rubric.objects.get(pk=context["rubric_id"])
+        return context
+
+
+class BbDetailView(DetailView):
+    model = Bb
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["rubrics"] = Rubric.objects.all()
         return context

@@ -1,0 +1,27 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %} Главная {% endblock %}</title>
+</head>
+<body>
+ <header>
+     <h1> Объявления</h1>
+ </header>
+<nav>
+    <a href="{% url 'app:index' %}">Главная</a>
+    <a href="{% url 'app:add' %}">Добавить</a>
+    </br>
+    </br>
+    {% for rubric in rubrics %}
+    <a href="{% url 'app:by_rubric' rubric.pk %}"> {{ rubric.name }}</a>
+    {% endfor %}
+</nav>
+<section>
+    {% block content %}
+    {% endblock %}
+</section>
+</body>
+</html>
