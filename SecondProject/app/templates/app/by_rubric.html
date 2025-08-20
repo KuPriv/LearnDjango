@@ -10,6 +10,7 @@
     <h2>{{ bb.title }}</h2>
     <p>Контент: {{ bb.content }}</p>
     <p>Цена: {{ bb.price }}</p>
+    <p> Паблишед: {{ bb.created_at }}</p>
     <p><a href="{% url 'app:edit' pk=bb.pk %}"> Изменить </a></p>
 </div>
 {% endfor %}

@@ -2,7 +2,16 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.contrib.auth.models import User
 from django.core import validators
+from django.utils import timezone
 from django.core.validators import EmailValidator
+
+
+class TimeStampedModel(models.Model):
+    created_at = models.DateTimeField(default=timezone.now, editable=False)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        abstract = True
 
 
 class Rubric(models.Model):
@@ -17,7 +26,7 @@ class Rubric(models.Model):
         return Rubric.objects.first()
 
 
-class Bb(models.Model):
+class Bb(TimeStampedModel):
     title = models.CharField(max_length=50)
     content = models.TextField(blank=True, null=True, default=None)
     price = models.IntegerField(blank=True, null=True)

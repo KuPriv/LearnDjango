@@ -32,5 +32,11 @@ class BoardAdmin(admin.ModelAdmin):
 
 @admin.register(Bb)
 class BbAdmin(admin.ModelAdmin):
-    list_display = ("title", "price", "pk")
+    list_display = (
+        "title",
+        "price",
+        "created_at",
+        "updated_at",
+        "pk",
+    )
     actions = ["delete_selected"]
