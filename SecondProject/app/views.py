@@ -1,5 +1,6 @@
 import logging
 import os
+from datetime import datetime, timezone, timedelta
 
 from django.db.models import (
     F,
@@ -48,6 +49,7 @@ from django.views.generic import (
     FormView,
     UpdateView,
     DeleteView,
+    ArchiveIndexView,
 )
 
 from .forms import BbForm
@@ -605,4 +607,18 @@ class BbDeleteView(DeleteView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         context["rubrics"] = Rubric.objects.all()
+        return context
+
+
+class BbIndexView(ArchiveIndexView):
+    model = Bb
+    date_field = "created_at"
+    date_list_period = "day"
+    template_name = "app/index.html"
+    context_object_name = "bbs"
+    allow_empty = True
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["rubric"] = Rubric.objects.all()
         return context

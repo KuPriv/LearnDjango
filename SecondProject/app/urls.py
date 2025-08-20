@@ -5,6 +5,7 @@ from .views import *
 
 app_name = "app"
 urlpatterns = [
+    path("", BbIndexView.as_view(), name="index"),
     path("", views.index, name="index"),
     path("show_r", views.show_rubric, name="show_r"),
     path("show_m", views.show_measurement, name="show_m"),

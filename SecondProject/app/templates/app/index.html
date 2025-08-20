@@ -4,12 +4,23 @@
 {% block title %} Индекс {% endblock %}
 
 {% block content %}
+
+<h3> Какие дни есть:</h3>
+<ul>
+    {% for d in date_list %}
+    <li> {{ d|date:"Y-m-d" }}</li>
+    {% empty %}
+    <li> Нет доступных дат</li>
+    {% endfor %}
+</ul>
+
 {% for bb in bbs %}
 <body>
     <h2><a href="{% url 'app:detail' pk=bb.pk %}">{{ bb.title }}</a></h2>
     <p>Прайс: {{ bb.price}}</p>
     <p> Контент: {{ bb.content }}</p>
     <p> Паблишед: {{ bb.created_at }}</p>
+    <p> Обновлено: {{ bb.updated_at }}</p>
     <p><a href="{% url 'app:edit' pk=bb.pk %}"> Изменить </a></p>
     <p><a href="{% url 'app:delete' pk=bb.pk %}"> Удалить </a></p>
 </body>
