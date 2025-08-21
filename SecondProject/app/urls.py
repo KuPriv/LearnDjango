@@ -1,4 +1,5 @@
 from django.urls import path
+from django.views.generic import YearArchiveView
 
 from . import views
 from .views import *
@@ -44,10 +45,26 @@ urlpatterns = [
         name="bb_by_rubric",
     ),
     path("detail/<int:pk>", BbDetailView.as_view(), name="detail"),
+    path(
+        "detail/<int:year>/<int:month>/<int:day>/<int:pk>",
+        BbRedirectView.as_view(),
+        name="old_detail",
+    ),
     path("list/<int:rubric_id>", BbByRubricViewList.as_view(), name="list"),
     path("add_form/", BbAddView.as_view(), name="add_form"),
     path("edit/<int:pk>", BbEditView.as_view(), name="edit"),
     path("delete<int:pk>", BbDeleteView.as_view(), name="delete"),
     path("archive/", BbIndexView.as_view(), name="archive"),
+    path(
+        "<int:year>/",
+        YearArchiveView.as_view(
+            model=Bb, date_field="created_at", make_object_list=True
+        ),
+    ),
+    path(
+        "<int:year>/<int:month>/<int:day>/<int:pk>",
+        BbDateDetailView.as_view(),
+        name="datedetail",
+    ),  # Также создает шаблон с суффиксом detail, как и DetailView, но надо указывать slug или pk в url
     # re_path - шаблонные выражения, как и re в Python
 ]

@@ -50,6 +50,8 @@ from django.views.generic import (
     UpdateView,
     DeleteView,
     ArchiveIndexView,
+    DateDetailView,
+    RedirectView,
 )
 
 from .forms import BbForm
@@ -620,5 +622,23 @@ class BbIndexView(ArchiveIndexView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
+        print(context["object_list"])
+        print(context["date_list"])
         context["rubric"] = Rubric.objects.all()
         return context
+
+
+class BbDateDetailView(DateDetailView):
+    model = Bb
+    date_field = "created_at"
+    month_format = "%m"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["rubrics"] = Rubric.objects.all()
+        return context
+
+
+class BbRedirectView(RedirectView):
+    url = "/app/detail/%(pk)d"
+    permanent = True
