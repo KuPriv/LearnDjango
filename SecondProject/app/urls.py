@@ -5,7 +5,6 @@ from .views import *
 
 app_name = "app"
 urlpatterns = [
-    path("", BbIndexView.as_view(), name="index"),
     path("", views.index, name="index"),
     path("show_r", views.show_rubric, name="show_r"),
     path("show_m", views.show_measurement, name="show_m"),
@@ -49,5 +48,6 @@ urlpatterns = [
     path("add_form/", BbAddView.as_view(), name="add_form"),
     path("edit/<int:pk>", BbEditView.as_view(), name="edit"),
     path("delete<int:pk>", BbDeleteView.as_view(), name="delete"),
+    path("archive/", BbIndexView.as_view(), name="archive"),
     # re_path - шаблонные выражения, как и re в Python
 ]

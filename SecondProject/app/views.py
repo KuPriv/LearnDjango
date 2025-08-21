@@ -614,7 +614,7 @@ class BbIndexView(ArchiveIndexView):
     model = Bb
     date_field = "created_at"
     date_list_period = "day"
-    template_name = "app/index.html"
+    template_name = "app/archive_index.html"
     context_object_name = "bbs"
     allow_empty = True
 

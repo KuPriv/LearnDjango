@@ -1,0 +1,17 @@
+{% extends 'layout/basic.html' %}
+{% load static %}
+
+{% block title %} Архив {% endblock %}
+
+{% block content %}
+
+<h3> Какие дни есть:</h3>
+<ul>
+    {% for d in date_list %}
+    <li> {{ d|date:"Y-m-d" }}</li>
+    {% empty %}
+    <li> Нет доступных дат</li>
+    {% endfor %}
+</ul>
+
+{% endblock %}

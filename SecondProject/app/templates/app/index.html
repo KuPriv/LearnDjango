@@ -5,15 +5,6 @@
 
 {% block content %}
 
-<h3> Какие дни есть:</h3>
-<ul>
-    {% for d in date_list %}
-    <li> {{ d|date:"Y-m-d" }}</li>
-    {% empty %}
-    <li> Нет доступных дат</li>
-    {% endfor %}
-</ul>
-
 {% for bb in bbs %}
 <body>
     <h2><a href="{% url 'app:detail' pk=bb.pk %}">{{ bb.title }}</a></h2>
