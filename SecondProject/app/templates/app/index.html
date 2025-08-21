@@ -7,13 +7,15 @@
 
 {% for bb in bbs %}
 <body>
-    <h2><a href="{% url 'app:detail' pk=bb.pk %}">{{ bb.title }}</a></h2>
-    <p>Прайс: {{ bb.price}}</p>
-    <p> Контент: {{ bb.content }}</p>
-    <p> Паблишед: {{ bb.created_at }}</p>
-    <p> Обновлено: {{ bb.updated_at }}</p>
-    <p><a href="{% url 'app:edit' pk=bb.pk %}"> Изменить </a></p>
-    <p><a href="{% url 'app:delete' pk=bb.pk %}"> Удалить </a></p>
+    <div class="{% cycle 'bb1' 'bb2' %}">
+        <h2><a href="{% url 'app:detail' pk=bb.pk %}">{{ bb.title }}</a></h2>
+        <p>Прайс: {{ bb.price}}</p>
+        <p> Контент: {{ bb.content }}</p>
+        <p> Паблишед: {{ bb.created_at }}</p>
+        <p> Обновлено: {{ bb.updated_at }}</p>
+        <p><a href="{% url 'app:edit' pk=bb.pk %}"> Изменить </a></p>
+        <p><a href="{% url 'app:delete' pk=bb.pk %}"> Удалить </a></p>
+    </div>
 </body>
 {% endfor %}
 {% endblock %}

@@ -38,6 +38,7 @@ urlpatterns = [
     path("detailw/<int:bb_id>", views.detailw, name="detailw"),
     path("detail2/<int:rubric_id>", views.detail2, name="detail2"),
     path("check_resolve", views.check_resolve, name="check_resolve"),
+    # re_path - шаблонные выражения, как и re в Python
     path("add_class/", BbCreateView.as_view()),
     path(
         "templateview_check/<int:rubric_id>",
@@ -66,5 +67,7 @@ urlpatterns = [
         BbDateDetailView.as_view(),
         name="datedetail",
     ),  # Также создает шаблон с суффиксом detail, как и DetailView, но надо указывать slug или pk в url
-    # re_path - шаблонные выражения, как и re в Python
+    path(
+        "detailclass/<int:rubric_id>", BbByRubricMixinView.as_view(), name="detailclass"
+    ),
 ]

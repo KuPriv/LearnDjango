@@ -53,6 +53,7 @@ from django.views.generic import (
     DateDetailView,
     RedirectView,
 )
+from django.views.generic.detail import SingleObjectMixin
 
 from .forms import BbForm
 from .models import *
@@ -642,3 +643,22 @@ class BbDateDetailView(DateDetailView):
 class BbRedirectView(RedirectView):
     url = "/app/detail/%(pk)d"
     permanent = True
+
+
+class BbByRubricMixinView(SingleObjectMixin, ListView):
+    template_name = "app/by_rubric.html"
+    pk_url_kwarg = "rubric_id"
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object(queryset=Rubric.objects.all())
+        return super().get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["current_rubric"] = self.object
+        context["rubric"] = Rubric.objects.all()
+        context["bbs"] = context["object_list"]
+        return context
+
+    def get_queryset(self):
+        return self.object.entries.all()
