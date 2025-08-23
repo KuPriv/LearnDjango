@@ -5,6 +5,7 @@
 __pycache__
 FirstProject/db.sqlite3
 media
+staticfiles/
 
 .idea/
 
