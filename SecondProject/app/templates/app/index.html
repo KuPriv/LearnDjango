@@ -4,6 +4,8 @@
 {% block title %} Индекс {% endblock %}
 
 {% block content %}
+<img src="{% static 'images/chrome.png' %}" alt="Chrome" style="height: 50px">
+{{ block.super }}
 {% now 'SHORT_DATETIME_FORMAT' %}
 
 {% filter force_escape|upper %}
