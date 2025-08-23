@@ -2,6 +2,7 @@ import logging
 import os
 from datetime import datetime, timezone, timedelta
 
+from django.core.paginator import Paginator
 from django.db.models import (
     F,
     Q,
@@ -64,9 +65,12 @@ def index(request):
     resp_content = ("Здесь ", "будет ", "главная ", "страница ", "сайта!")
     resp = StreamingHttpResponse(resp_content, content_type="text/html; charset=utf-8")
     return resp"""
-    bbs = Bb.objects.all()
+    bbs = Bb.objects.all().order_by("price")
     rubrics = Rubric.objects.all()
-    context = {"bbs": bbs, "rubrics": rubrics}
+    paginator = Paginator(bbs, 2)
+    page_num = request.GET.get("page", 1)
+    page = paginator.get_page(page_num)
+    context = {"bbs": bbs, "page": page, "rubrics": rubrics}
     return render(request, "app/index.html", context)
 
 

@@ -20,7 +20,18 @@
 {{ bbs.first.title|join:','}}
 {{ bbs.first.title|make_list}}
 
-{% for bb in bbs|dictsort:'price' %}
+<div>
+    {% if page.has_previous %}
+    <a href="?page={{ page.previous_page_number }}"> &lt;</a>
+    &nbsp;&nbsp;|&nbsp;&nbsp;
+    {% endif %}
+    Часть №{{ page.number }} из {{ page.paginator.num_pages }}
+    {% if page.has_next %}
+    &nbsp;&nbsp;|&nbsp;&nbsp;
+    <a href="?page={{ page.next_page_number }}"> &gt;</a>
+    {% endif %}
+</div>
+{% for bb in page %}
 <body>
     <div class="{% cycle 'bb1' 'bb2' %}">
         <h2><a href="{% url 'app:detail' pk=bb.pk %}">{{ bb.title }}</a></h2>
