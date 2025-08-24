@@ -22,7 +22,7 @@ from django.db.models import (
     OuterRef,
     Exists,
 )
-from django.forms import modelform_factory, DecimalField, Select
+from django.forms import modelform_factory, DecimalField, Select, modelformset_factory
 from django.http import (
     HttpResponse,
     HttpResponseRedirect,
@@ -40,7 +40,7 @@ from django.db.models.functions import (
     Now,
     Extract,
 )
-from django.shortcuts import render, get_object_or_404, get_list_or_404
+from django.shortcuts import render, get_object_or_404, get_list_or_404, redirect
 from django.urls import reverse, reverse_lazy, resolve
 from django.views import View
 from django.views.decorators.http import require_http_methods
@@ -709,3 +709,18 @@ def edit(request, pk):
 
     context = {"form": bbf}
     return render(request, "app/bb_form.html", context)
+
+
+def rubric_set(request):
+    RubricFormSet = modelformset_factory(
+        Rubric, fields=("name",), can_order=True, can_delete=True
+    )
+    if request.method == "POST":
+        formset = RubricFormSet(request.POST)
+        if formset.is_valid():
+            formset.save()
+            return redirect("app:index")
+    else:
+        formset = RubricFormSet()
+
+    return render(request, "app/rubric_formset.html", {"formset": formset})

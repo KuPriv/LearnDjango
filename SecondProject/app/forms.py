@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.forms import ModelForm, DecimalField, Select
 from django import forms
 from .models import Bb, Rubric
@@ -35,6 +36,17 @@ class BbForm(forms.ModelForm):
         label="Соглашайся, падла",
         widget=forms.CheckboxInput,
     )
+
+    def clean(self):
+        super().clean()
+        errors = {}
+        if not self.cleaned_data["content"]:
+            errors.content = ValidationError("Описания нет.")
+        if self.cleaned_data["price"] < 0:
+            errors.price = ValidationError("Цена не может быть меньше 0")
+
+        if errors:
+            raise ValidationError(errors)
 
     class Meta:
         model = Bb

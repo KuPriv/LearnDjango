@@ -1,0 +1,20 @@
+<h1>Редактировать рубрики</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ formset.management_form }}
+    <table>
+        {% for form in formset %}
+        <tr>
+            <td>{{ form.id }}</td>
+            <td>{{ form.name }}</td>
+            {% if form.can_order %}
+                <td>{{ form.ORDER }}</td>
+            {% endif %}
+            {% if form.can_delete %}
+                <td>{{ form.DELETE }}</td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </table>
+    <input type="submit" value="Сохранить">
+</form>
