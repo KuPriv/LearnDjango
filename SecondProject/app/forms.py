@@ -27,6 +27,14 @@ class BbForm(forms.ModelForm):
         help_text="Задай рубрику",
         widget=forms.widgets.Select(attrs={"size": 8}),
     )
+    calendar_field = forms.DateField(
+        label="Дата", widget=forms.SelectDateWidget(years=(2000 + i for i in range(30)))
+    )
+    # text = forms.CharField(widget=forms.Textarea)
+    checkbox = forms.BooleanField(
+        label="Соглашайся, падла",
+        widget=forms.CheckboxInput,
+    )
 
     class Meta:
         model = Bb

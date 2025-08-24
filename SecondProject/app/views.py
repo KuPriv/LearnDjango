@@ -2,6 +2,7 @@ import logging
 import os
 from datetime import datetime, timezone, timedelta
 
+from django.contrib.auth.forms import UserCreationForm
 from django.core.paginator import Paginator
 from django.db.models import (
     F,
@@ -685,6 +686,8 @@ class BbCreateFormView(CreateView):
 
 
 class RegisterUserFormView(CreateView):
+    model = User
     form_class = RegisterUserForm
+    # form_class = UserCreationForm
     template_name = "app/register.html"
     success_url = reverse_lazy("app:index")
