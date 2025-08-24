@@ -21,6 +21,7 @@ from django.db.models import (
     OuterRef,
     Exists,
 )
+from django.forms import modelform_factory, DecimalField, Select
 from django.http import (
     HttpResponse,
     HttpResponseRedirect,
@@ -56,7 +57,7 @@ from django.views.generic import (
 )
 from django.views.generic.detail import SingleObjectMixin
 
-from .forms import BbForm
+from .forms import BbForm, RegisterUserForm
 from .models import *
 
 
@@ -666,3 +667,24 @@ class BbByRubricMixinView(SingleObjectMixin, ListView):
 
     def get_queryset(self):
         return self.object.entries.all()
+
+
+class BbCreateFormView(CreateView):
+    BbForm = modelform_factory(
+        Bb,
+        fields=("title", "content", "price", "rubric"),
+        labels={"title": "Название товара"},
+        help_texts={"rubric": "Не забудь выбрать рубрику"},
+        field_classes={"price": DecimalField},
+        widgets={"rubric": Select(attrs={"size": 8})},
+    )
+
+    form_class = BbForm
+    template_name = "app/create.html"
+    success_url = reverse_lazy("app:index")
+
+
+class RegisterUserFormView(CreateView):
+    form_class = RegisterUserForm
+    template_name = "app/register.html"
+    success_url = reverse_lazy("app:index")

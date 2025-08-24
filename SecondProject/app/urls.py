@@ -70,4 +70,6 @@ urlpatterns = [
     path(
         "detailclass/<int:rubric_id>", BbByRubricMixinView.as_view(), name="detailclass"
     ),
+    path("add_class_form/", BbCreateFormView.as_view()),
+    path("register_user/", RegisterUserFormView.as_view()),
 ]
