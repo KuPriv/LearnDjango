@@ -12,6 +12,7 @@
     <p>Цена: {{ bb.price }}</p>
     <p> Паблишед: {{ bb.created_at }}</p>
     <p><a href="{% url 'app:edit' pk=bb.pk %}"> Изменить </a></p>
+    <p><a href="{% url 'app:delete' pk=bb.pk %}"> Удалить </a></p>
 </div>
 {% endfor %}
 {% endblock %}
