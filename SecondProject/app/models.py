@@ -21,6 +21,9 @@ class Rubric(models.Model):
     class Meta:
         db_table = "rubric"
 
+    def __str__(self):
+        return self.name
+
     @staticmethod
     def get_first_rubric():
         return Rubric.objects.first()

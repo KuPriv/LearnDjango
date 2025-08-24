@@ -691,3 +691,21 @@ class RegisterUserFormView(CreateView):
     # form_class = UserCreationForm
     template_name = "app/register.html"
     success_url = reverse_lazy("app:index")
+
+
+def edit(request, pk):
+    bb = get_object_or_404(Bb, pk=pk)
+    if request.method == "POST":
+        bbf = BbForm(request.POST, instance=bb)
+        if bbf.is_valid():
+            bbf.save()
+            return HttpResponseRedirect(
+                reverse(
+                    "app:by_rubric", kwargs={"rubric_id": bbf.cleaned_data["rubric"].pk}
+                ),
+            )
+    else:
+        bbf = BbForm(instance=bb)
+
+    context = {"form": bbf}
+    return render(request, "app/bb_form.html", context)
