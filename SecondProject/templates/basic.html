@@ -16,6 +16,11 @@
     <a href="{% url 'app:register_user' %}"> Регистрация</a>
     <a href="{% url 'app:archive' %}"> Какие дни есть? </a>
     <a href="{% url 'app:rubric_set' %}">Список рубрик (формсет)</a>
+    <a href="{% url 'accounts:login' %}"> Логин</a>
+    <form method="post" action="{% url 'accounts:logout' %}">
+        {% csrf_token %}
+        <button type="submit">Выйти</button>
+    </form>
     </br>
     </br>
     {% for rubric in rubrics %}

@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "app",
     "accounts",
+    "django_extensions",
 ]
 
 MIDDLEWARE = [
@@ -128,5 +129,18 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # Настройки логина и регистрации
 
 LOGIN_URL = "accounts/login/"
-LOGIN_REDIRECT_URL = "/accounts/profile/"
-LOGOUT_REDIRECT_URL = "/"
+LOGIN_REDIRECT_URL = "app:index"
+LOGOUT_REDIRECT_URL = "app:index"
+
+# Безопасность
+
+SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+SECURE_HSTS_SECONDS = 3600
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_BROWSER_XSS_FILTER = True
+X_FRAME_OPTIONS = "DENY"
+
+# Время сессии
+SESSION_COOKIE_AGE = 1800  # 30 минут
