@@ -128,9 +128,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Настройки логина и регистрации
 
-LOGIN_URL = "accounts/login/"
-LOGIN_REDIRECT_URL = "app:index"
-LOGOUT_REDIRECT_URL = "app:index"
+LOGIN_URL = "/accounts/login/"
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/"
 
 # Безопасность
 
