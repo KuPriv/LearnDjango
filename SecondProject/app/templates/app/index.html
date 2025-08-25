@@ -1,9 +1,47 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
+{% extends 'basic.html' %}
+{% load static %}
+
+{% block title %} Индекс {% endblock %}
+
+{% block content %}
+<img src="{% static 'images/chrome.png' %}" alt="Chrome" style="height: 50px">
+{{ block.super }}
+{% now 'SHORT_DATETIME_FORMAT' %}
+
+{% filter force_escape|upper %}
+<p> Текст??? авапвап</p>
+{% endfilter %}
+
+{# Это комментарий (не выводится) #}
+{% comment 'Чота!' %}
+<p> gdfg dfg dfg</p>
+{% endcomment %}
+{{ 656564|filesizeformat }}
+{{ bbs.first.title|join:','}}
+{{ bbs.first.title|make_list}}
+
+<div>
+    {% if page.has_previous %}
+    <a href="?page={{ page.previous_page_number }}"> &lt;</a>
+    &nbsp;&nbsp;|&nbsp;&nbsp;
+    {% endif %}
+    Часть №{{ page.number }} из {{ page.paginator.num_pages }}
+    {% if page.has_next %}
+    &nbsp;&nbsp;|&nbsp;&nbsp;
+    <a href="?page={{ page.next_page_number }}"> &gt;</a>
+    {% endif %}
+</div>
+{% for bb in page %}
 <body>
+    <div class="{% cycle 'bb1' 'bb2' %}">
+        <h2><a href="{% url 'app:detail' pk=bb.pk %}">{{ bb.title }}</a></h2>
+        <p>Прайс: {{ bb.price|default:'Нема цена'}}</p>
+        <p> Контент: {{ bb.content|lower|capfirst|default:'--Описания нема--'}}</p>
+        <p> Паблишед: {{ bb.created_at }}</p>
+        <p> Обновлено: {{ bb.updated_at }}</p>
+        <p><a href="{% url 'app:edit' pk=bb.pk %}"> Изменить </a></p>
+        <p><a href="{% url 'app:delete' pk=bb.pk %}"> Удалить </a></p>
+    </div>
 </body>
-</html>
+{% endfor %}
+{% endblock %}

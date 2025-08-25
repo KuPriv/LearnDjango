@@ -1,0 +1,17 @@
+{% extends 'basic.html' %}
+{% load static %}
+
+{% block title %} Удаление объявления {% endblock %}
+
+{% block content %}
+<h2> Удаление объявления</h2>
+<p> Рубрика: {{ bb.rubric.name }}</p>
+<p> Товар: {{ bb.title }}</p>
+<p> {{ bb.content }}</p>
+<p> Цена: {{ bb.price }}</p>
+<p> Паблишед: {{ bb.created_at }}</p>
+<form method="post">
+    {% csrf_token %}
+    <input type="submit" value="Удалить">
+</form>
+{% endblock %}

@@ -13,6 +13,9 @@
 <nav>
     <a href="{% url 'app:index' %}">Главная</a>
     <a href="{% url 'app:add' %}">Добавить</a>
+    <a href="{% url 'app:register_user' %}"> Регистрация</a>
+    <a href="{% url 'app:archive' %}"> Какие дни есть? </a>
+    <a href="{% url 'app:rubric_set' %}">Список рубрик (формсет)</a>
     </br>
     </br>
     {% for rubric in rubrics %}
@@ -21,6 +24,7 @@
 </nav>
 <section>
     {% block content %}
+    Текст из basic.html <--
     {% endblock %}
 </section>
 </body>

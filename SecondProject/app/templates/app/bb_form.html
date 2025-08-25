@@ -1,0 +1,32 @@
+{% extends 'basic.html' %}
+{% load static %}
+
+{% block title %} Изменяем ббшку {% endblock %}
+
+{% block content %}
+<form method="post">
+  <h2> Форма ббшки</h2>
+  {% csrf_token %}
+  {% for hidden in form.hidden_fields %}
+    {{ hidden }}
+  {% endfor %}
+  {% if form.non_field_errors %}
+  <ul>
+    {% for error in form.non_field_errors %}
+    <li><em>{{ error|escape }}</em></li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+  {% for field in form.visible_fields %}
+    {% if field.errors %}
+    <ul>
+      {% for error in field.error %}
+      <li><em>{{ error|escape }}</em></li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+  <p>{{ field.label_tag }} <br> {{ field }} <br> {{ field.help_text }}</p>
+  {% endfor %}
+  <input type="submit" value="Изменить">
+</form>
+{% endblock %}

@@ -1,6 +1,9 @@
 import logging
 import os
+from datetime import datetime, timezone, timedelta
 
+from django.contrib.auth.forms import UserCreationForm
+from django.core.paginator import Paginator
 from django.db.models import (
     F,
     Q,
@@ -19,6 +22,15 @@ from django.db.models import (
     OuterRef,
     Exists,
 )
+from django.forms import (
+    modelform_factory,
+    DecimalField,
+    Select,
+    modelformset_factory,
+    BaseModelFormSet,
+    inlineformset_factory,
+)
+from django.forms.formsets import ORDERING_FIELD_NAME
 from django.http import (
     HttpResponse,
     HttpResponseRedirect,
@@ -36,21 +48,40 @@ from django.db.models.functions import (
     Now,
     Extract,
 )
-from django.shortcuts import render, get_object_or_404, get_list_or_404
+from django.shortcuts import render, get_object_or_404, get_list_or_404, redirect
 from django.urls import reverse, reverse_lazy, resolve
 from django.views import View
 from django.views.decorators.http import require_http_methods
-from django.views.generic import ListView, CreateView, TemplateView, DetailView
+from django.views.generic import (
+    ListView,
+    CreateView,
+    TemplateView,
+    DetailView,
+    FormView,
+    UpdateView,
+    DeleteView,
+    ArchiveIndexView,
+    DateDetailView,
+    RedirectView,
+)
+from django.views.generic.detail import SingleObjectMixin
 
-from .forms import BbForm
+from .forms import BbForm, RegisterUserForm
 from .models import *
 
 
 def index(request):
-    success_url = reverse_lazy("index")
+    """success_url = reverse_lazy("index")
     resp_content = ("Здесь ", "будет ", "главная ", "страница ", "сайта!")
-    resp = StreamingHttpResponse(resp_content, content_type="text/plain; charset=utf-8")
-    return resp
+    resp = StreamingHttpResponse(resp_content, content_type="text/html; charset=utf-8")
+    return resp"""
+    bbs = Bb.objects.all().order_by("price")
+    rubrics = Rubric.objects.all()
+    paginator = Paginator(bbs, 2)
+    page_num = request.GET.get("page", 1)
+    page = paginator.get_page(page_num)
+    context = {"bbs": bbs, "page": page, "rubrics": rubrics}
+    return render(request, "app/index.html", context)
 
 
 def show_rubric(request):
@@ -534,3 +565,206 @@ class BbDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         context["rubrics"] = Rubric.objects.all()
         return context
+
+
+class BbByRubricViewList(ListView):
+    template_name = "app/by_rubric.html"
+    context_object_name = "bbs"
+
+    def get_queryset(self):
+        return Bb.objects.filter(rubric=self.kwargs["rubric_id"])
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["rubrics"] = Rubric.objects.all()
+        context["current_rubric"] = Rubric.objects.get(pk=self.kwargs["rubric_id"])
+
+        return context
+
+
+class BbAddView(FormView):
+    template_name = "app/create.html"
+    form_class = BbForm
+    initial = {"price": 0.0}
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["rubrics"] = Rubric.objects.all()
+        return context
+
+    def form_valid(self, form):
+        form.save()
+        return super().form_valid(form)
+
+    def get_form(self, form_class=None):
+        self.object = super().get_form(form_class)
+        return self.object
+
+    def get_success_url(self):
+        return reverse(
+            "app:by_rubric", kwargs={"rubric_id": self.object.cleaned_data["rubric"].pk}
+        )
+
+
+class BbEditView(UpdateView):
+    model = Bb
+    form_class = BbForm
+    success_url = "/app"
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context["rubrics"] = Rubric.objects.all()
+        return context
+
+
+class BbDeleteView(DeleteView):
+    model = Bb
+    success_url = "/app"
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context["rubrics"] = Rubric.objects.all()
+        return context
+
+
+class BbIndexView(ArchiveIndexView):
+    model = Bb
+    date_field = "created_at"
+    date_list_period = "day"
+    template_name = "app/archive_index.html"
+    context_object_name = "bbs"
+    allow_empty = True
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(**kwargs)
+        print(context["object_list"])
+        print(context["date_list"])
+        context["rubric"] = Rubric.objects.all()
+        return context
+
+
+class BbDateDetailView(DateDetailView):
+    model = Bb
+    date_field = "created_at"
+    month_format = "%m"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["rubrics"] = Rubric.objects.all()
+        return context
+
+
+class BbRedirectView(RedirectView):
+    url = "/app/detail/%(pk)d"
+    permanent = True
+
+
+class BbByRubricMixinView(SingleObjectMixin, ListView):
+    template_name = "app/by_rubric.html"
+    pk_url_kwarg = "rubric_id"
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object(queryset=Rubric.objects.all())
+        return super().get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["current_rubric"] = self.object
+        context["rubric"] = Rubric.objects.all()
+        context["bbs"] = context["object_list"]
+        return context
+
+    def get_queryset(self):
+        return self.object.entries.all()
+
+
+class BbCreateFormView(CreateView):
+    BbForm = modelform_factory(
+        Bb,
+        fields=("title", "content", "price", "rubric"),
+        labels={"title": "Название товара"},
+        help_texts={"rubric": "Не забудь выбрать рубрику"},
+        field_classes={"price": DecimalField},
+        widgets={"rubric": Select(attrs={"size": 8})},
+    )
+
+    form_class = BbForm
+    template_name = "app/create.html"
+    success_url = reverse_lazy("app:index")
+
+
+class RegisterUserFormView(CreateView):
+    model = User
+    form_class = RegisterUserForm
+    # form_class = UserCreationForm
+    template_name = "app/register.html"
+    success_url = reverse_lazy("app:index")
+
+
+def edit(request, pk):
+    bb = get_object_or_404(Bb, pk=pk)
+    if request.method == "POST":
+        bbf = BbForm(request.POST, instance=bb)
+        if bbf.is_valid():
+            bbf.save()
+            return HttpResponseRedirect(
+                reverse(
+                    "app:by_rubric", kwargs={"rubric_id": bbf.cleaned_data["rubric"].pk}
+                ),
+            )
+    else:
+        bbf = BbForm(instance=bb)
+
+    context = {"form": bbf}
+    return render(request, "app/bb_form.html", context)
+
+
+def rubrics(request):
+    RubricFormSet = modelformset_factory(
+        Rubric,
+        fields=("name",),
+        can_order=True,
+        can_delete=True,
+        formset=RubricBaseFormSet,
+    )
+
+    if request.method == "POST":
+        formset = RubricFormSet(request.POST)
+        if formset.is_valid():
+            for form in formset:
+                if form.cleaned_data:
+                    rubric = form.save(commit=False)
+                    rubric.order = form.cleaned_data[ORDERING_FIELD_NAME]
+                    rubric.save()
+            return redirect("app:index")
+    else:
+        formset = RubricFormSet()
+
+    context = {"formset": formset}
+    return render(request, "app/rubric_formset.html", context)
+
+
+class RubricBaseFormSet(BaseModelFormSet):
+    def clean(self):
+        super().clean()
+        names = [
+            form.cleaned_data["name"]
+            for form in self.forms
+            if "name" in form.cleaned_data
+        ]
+        if ("Мяу" not in names) or ("Мяучик" not in names):
+            raise ValidationError("РУБРИК С МЯУКАЛКАМИ НЕ ХВАТАЕТ")
+
+
+def bbs(request, rubric_id):
+    BbsFormSet = inlineformset_factory(Rubric, Bb, form=BbForm, extra=1)
+    rubric = Rubric.objects.get(pk=rubric_id)
+    if request.method == "POST":
+        formset = BbsFormSet(request.POST, instance=rubric)
+        if formset.is_valid():
+            formset.save()
+            return redirect("app:index")
+    else:
+        formset = BbsFormSet(instance=rubric)
+    context = {"formset": formset, "current_rubric": rubric}
+    return render(request, "app/bbs.html", context)

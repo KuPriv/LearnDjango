@@ -1,4 +1,5 @@
 from django.urls import path
+from django.views.generic import YearArchiveView
 
 from . import views
 from .views import *
@@ -37,6 +38,7 @@ urlpatterns = [
     path("detailw/<int:bb_id>", views.detailw, name="detailw"),
     path("detail2/<int:rubric_id>", views.detail2, name="detail2"),
     path("check_resolve", views.check_resolve, name="check_resolve"),
+    # re_path - шаблонные выражения, как и re в Python
     path("add_class/", BbCreateView.as_view()),
     path(
         "templateview_check/<int:rubric_id>",
@@ -44,5 +46,32 @@ urlpatterns = [
         name="bb_by_rubric",
     ),
     path("detail/<int:pk>", BbDetailView.as_view(), name="detail"),
-    # re_path - шаблонные выражения, как и re в Python
+    path(
+        "detail/<int:year>/<int:month>/<int:day>/<int:pk>",
+        BbRedirectView.as_view(),
+        name="old_detail",
+    ),
+    path("list/<int:rubric_id>", BbByRubricViewList.as_view(), name="list"),
+    path("add_form/", BbAddView.as_view(), name="add_form"),
+    path("edit/<int:pk>", BbEditView.as_view(), name="edit"),
+    path("delete<int:pk>", BbDeleteView.as_view(), name="delete"),
+    path("archive/", BbIndexView.as_view(), name="archive"),
+    path(
+        "<int:year>/",
+        YearArchiveView.as_view(
+            model=Bb, date_field="created_at", make_object_list=True
+        ),
+    ),
+    path(
+        "<int:year>/<int:month>/<int:day>/<int:pk>",
+        BbDateDetailView.as_view(),
+        name="datedetail",
+    ),  # Также создает шаблон с суффиксом detail, как и DetailView, но надо указывать slug или pk в url
+    path(
+        "detailclass/<int:rubric_id>", BbByRubricMixinView.as_view(), name="detailclass"
+    ),
+    path("add_class_form/", BbCreateFormView.as_view()),
+    path("register_user/", RegisterUserFormView.as_view(), name="register_user"),
+    path("rubrics/edit/", views.rubrics, name="rubric_set"),
+    path("bbs_list/<int:rubric_id>", views.bbs, name="bbs_list"),
 ]

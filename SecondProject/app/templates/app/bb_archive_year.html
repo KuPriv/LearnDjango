@@ -1,0 +1,15 @@
+{%extends 'basic.html' %}
+{% load static %}
+
+{% block title %} Ohhh...shit, here we go again... {% endblock %}
+
+{% block content %}
+
+Дэйт: {{ year }}
+<ul>
+{% for bb in object_list %}<li>{{ bb.title }} - {{ bb.created_at|date:"Y-m-d" }}</li>
+{% empty %}<li>Нет объявлений за этот год</li>
+{% endfor %}
+</ul>
+
+{% endblock %}

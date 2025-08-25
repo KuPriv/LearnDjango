@@ -1,0 +1,32 @@
+{% extends 'basic.html' %}
+
+{% block content %}
+<h1>Редактировать ббшки {{ current_rubric }}</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ formset.management_form }}
+    {% if formset.non_form_errors %}
+    <ul>
+        {% for error in formset.non_form_errors %}
+        <li><em>{{ error|escape}}</em></li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    <table>
+        {% for form in formset %}
+        <tr>
+            <td>{{ form.id }}</td>
+            <td> Название: {{ form.title }}</td>
+            {% if formset.can_order %}
+                <td> Порядок: {{ form.ORDER }}</td>
+            {% endif %}
+            {% if formset.can_delete %}
+                <td> Удалить: {{ form.DELETE }}</td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </table>
+    <input type="submit" value="Сохранить">
+</form>
+
+{% endblock %}
