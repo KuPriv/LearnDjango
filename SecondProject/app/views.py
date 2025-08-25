@@ -22,7 +22,13 @@ from django.db.models import (
     OuterRef,
     Exists,
 )
-from django.forms import modelform_factory, DecimalField, Select, modelformset_factory
+from django.forms import (
+    modelform_factory,
+    DecimalField,
+    Select,
+    modelformset_factory,
+    BaseModelFormSet,
+)
 from django.forms.formsets import ORDERING_FIELD_NAME
 from django.http import (
     HttpResponse,
@@ -714,7 +720,11 @@ def edit(request, pk):
 
 def rubrics(request):
     RubricFormSet = modelformset_factory(
-        Rubric, fields=("name",), can_order=True, can_delete=True
+        Rubric,
+        fields=("name",),
+        can_order=True,
+        can_delete=True,
+        formset=RubricBaseFormSet,
     )
 
     if request.method == "POST":
@@ -731,3 +741,15 @@ def rubrics(request):
 
     context = {"formset": formset}
     return render(request, "app/rubric_formset.html", context)
+
+
+class RubricBaseFormSet(BaseModelFormSet):
+    def clean(self):
+        super().clean()
+        names = [
+            form.cleaned_data["name"]
+            for form in self.forms
+            if "name" in form.cleaned_data
+        ]
+        if ("Мяу" not in names) or ("Мяучик" not in names):
+            raise ValidationError("РУБРИК С МЯУКАЛКАМИ НЕ ХВАТАЕТ")
