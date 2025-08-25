@@ -17,12 +17,11 @@
     <a href="{% url 'app:archive' %}"> Какие дни есть? </a>
     <a href="{% url 'app:rubric_set' %}">Список рубрик (формсет)</a>
     <a href="{% url 'accounts:login' %}"> Логин</a>
-    <a>
-        <form method="post" action="{% url 'accounts:logout' %}">
-        {% csrf_token %}
-        <button type="submit">Выйти</button>
-        </form>
-    </a>
+    <a href="{% url 'accounts:password_change' %}"> Смена пароля</a>
+    <form method="post" action="{% url 'accounts:logout' %}" style="display: inline;">
+    {% csrf_token %}
+    <button type="submit">Выйти</button>
+    </form>
     </br>
     </br>
     {% for rubric in rubrics %}
