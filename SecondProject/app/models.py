@@ -17,9 +17,11 @@ class TimeStampedModel(models.Model):
 class Rubric(models.Model):
     name = models.CharField(max_length=50, blank=True)
     show = models.BooleanField(default=False)
+    order = models.SmallIntegerField(default=0, db_index=True)
 
     class Meta:
         db_table = "rubric"
+        ordering = "order", "name"
 
     def __str__(self):
         return self.name

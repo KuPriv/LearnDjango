@@ -72,5 +72,5 @@ urlpatterns = [
     ),
     path("add_class_form/", BbCreateFormView.as_view()),
     path("register_user/", RegisterUserFormView.as_view(), name="register_user"),
-    path("rubrics/edit/", views.rubric_set, name="rubric_set"),
+    path("rubrics/edit/", views.rubrics, name="rubric_set"),
 ]

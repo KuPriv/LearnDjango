@@ -1,3 +1,6 @@
+{% extends 'layout/basic.html' %}
+
+{% block content %}
 <h1>Редактировать рубрики</h1>
 <form method="post">
     {% csrf_token %}
@@ -6,15 +9,16 @@
         {% for form in formset %}
         <tr>
             <td>{{ form.id }}</td>
-            <td>{{ form.name }}</td>
-            {% if form.can_order %}
-                <td>{{ form.ORDER }}</td>
+            <td> Название: {{ form.name }}</td>
+            {% if formset.can_order %}
+                <td> Порядок: {{ form.ORDER }}</td>
             {% endif %}
-            {% if form.can_delete %}
-                <td>{{ form.DELETE }}</td>
+            {% if formset.can_delete %}
+                <td> Удалить: {{ form.DELETE }}</td>
             {% endif %}
         </tr>
         {% endfor %}
     </table>
     <input type="submit" value="Сохранить">
 </form>
+{% endblock %}
