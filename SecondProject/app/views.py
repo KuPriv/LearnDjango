@@ -28,6 +28,7 @@ from django.forms import (
     Select,
     modelformset_factory,
     BaseModelFormSet,
+    inlineformset_factory,
 )
 from django.forms.formsets import ORDERING_FIELD_NAME
 from django.http import (
@@ -753,3 +754,17 @@ class RubricBaseFormSet(BaseModelFormSet):
         ]
         if ("Мяу" not in names) or ("Мяучик" not in names):
             raise ValidationError("РУБРИК С МЯУКАЛКАМИ НЕ ХВАТАЕТ")
+
+
+def bbs(request, rubric_id):
+    BbsFormSet = inlineformset_factory(Rubric, Bb, form=BbForm, extra=1)
+    rubric = Rubric.objects.get(pk=rubric_id)
+    if request.method == "POST":
+        formset = BbsFormSet(request.POST, instance=rubric)
+        if formset.is_valid():
+            formset.save()
+            return redirect("app:index")
+    else:
+        formset = BbsFormSet(instance=rubric)
+    context = {"formset": formset, "current_rubric": rubric}
+    return render(request, "app/bbs.html", context)
