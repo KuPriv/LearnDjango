@@ -1,3 +1,4 @@
+from django.conf.global_settings import EMAIL_HOST_USER
 from dotenv import load_dotenv
 import os
 
@@ -34,6 +35,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "app",
     "accounts",
+    "django_extensions",
 ]
 
 MIDDLEWARE = [
@@ -127,6 +129,30 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Настройки логина и регистрации
 
-LOGIN_URL = "accounts/login/"
-LOGIN_REDIRECT_URL = "/accounts/profile/"
+LOGIN_URL = "/accounts/login/"
+LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
+
+# Безопасность
+
+SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+SECURE_HSTS_SECONDS = 3600
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_BROWSER_XSS_FILTER = True
+X_FRAME_OPTIONS = "DENY"
+
+# Время сессии
+SESSION_COOKIE_AGE = 1800  # 30 минут
+
+# Работа с почтой
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
