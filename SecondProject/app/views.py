@@ -2,7 +2,9 @@ import logging
 import os
 from datetime import datetime, timezone, timedelta
 
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.views import redirect_to_login
 from django.core.paginator import Paginator
 from django.db.models import (
     F,
@@ -37,6 +39,7 @@ from django.http import (
     HttpResponseNotFound,
     StreamingHttpResponse,
     FileResponse,
+    HttpResponseForbidden,
 )
 from django.db.models.functions import (
     Concat,
@@ -75,6 +78,19 @@ def index(request):
     resp_content = ("Здесь ", "будет ", "главная ", "страница ", "сайта!")
     resp = StreamingHttpResponse(resp_content, content_type="text/html; charset=utf-8")
     return resp"""
+    print(request.user.is_authenticated)
+    print(request.user.has_perm("app:add_rubric"))
+    print(
+        request.user.has_perms(
+            ("app:add_rubric", "app:change_rubric", "app:delete_rubric")
+        )
+    )
+    print(request.user.username)
+    # print(User.objects.with_perm("app.add_bb"))
+
+    print(request.user.get_user_permissions())
+    print(request.user.get_group_permissions())
+    print(request.user.get_all_permissions())
     bbs = Bb.objects.all().order_by("price")
     rubrics = Rubric.objects.all()
     paginator = Paginator(bbs, 2)
@@ -719,6 +735,10 @@ def edit(request, pk):
     return render(request, "app/bb_form.html", context)
 
 
+@permission_required(
+    ("app.add_rubric", "app.delete_rubric", "app.change_rubric"),
+    login_url=reverse_lazy("accounts:login"),
+)
 def rubrics(request):
     RubricFormSet = modelformset_factory(
         Rubric,
@@ -727,21 +747,17 @@ def rubrics(request):
         can_delete=True,
         formset=RubricBaseFormSet,
     )
+    formset = RubricFormSet(request.POST or None)
 
-    if request.method == "POST":
-        formset = RubricFormSet(request.POST)
-        if formset.is_valid():
-            for form in formset:
-                if form.cleaned_data:
-                    rubric = form.save(commit=False)
-                    rubric.order = form.cleaned_data[ORDERING_FIELD_NAME]
-                    rubric.save()
-            return redirect("app:index")
-    else:
-        formset = RubricFormSet()
+    if request.method == "POST" and formset.is_valid():
+        for form in formset:
+            if form.cleaned_data:
+                rubric = form.save(commit=False)
+                rubric.order = form.cleaned_data[ORDERING_FIELD_NAME]
+                rubric.save()
+        return redirect("app:index")
 
-    context = {"formset": formset}
-    return render(request, "app/rubric_formset.html", context)
+    return render(request, "app/rubric_formset.html", {"formset": formset})
 
 
 class RubricBaseFormSet(BaseModelFormSet):
