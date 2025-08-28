@@ -4,6 +4,7 @@ from datetime import datetime, timezone, timedelta
 
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import redirect_to_login
 from django.core.paginator import Paginator
 from django.db.models import (
@@ -556,7 +557,7 @@ def check_resolve(request):
 def add(request): ...
 
 
-class BbCreateView(CreateView):
+class BbCreateView(LoginRequiredMixin, CreateView):
     template_name = "app/create.html"
     model = Bb
     fields = ["title", "price", "rubric"]
@@ -740,6 +741,9 @@ def edit(request, pk):
     login_url=reverse_lazy("accounts:login"),
 )
 def rubrics(request):
+    # Если это CBV используем AccessMixin
+    # Также есть LoginRequiredMixin, UserPassesTestMixin
+    # (test_func переопределить), PermissionRequiredMixin
     RubricFormSet = modelformset_factory(
         Rubric,
         fields=("name",),
