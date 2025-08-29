@@ -14,10 +14,21 @@ class TimeStampedModel(models.Model):
         abstract = True
 
 
+class SuperRubric(models.Model):
+    title = models.CharField(max_length=50, blank=True)
+
+
 class Rubric(models.Model):
     name = models.CharField(max_length=50, blank=True)
     show = models.BooleanField(default=False)
     order = models.SmallIntegerField(default=0, db_index=True)
+    super_rubric = models.ForeignKey(
+        SuperRubric,
+        related_name="super_rubric",
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+    )
 
     class Meta:
         db_table = "rubric"
