@@ -788,3 +788,11 @@ def bbs(request, rubric_id):
         formset = BbsFormSet(instance=rubric)
     context = {"formset": formset, "current_rubric": rubric}
     return render(request, "app/bbs.html", context)
+
+
+def test_select_prefetch_related(request):
+    b = get_object_or_404(Bb, pk=40)
+    print(b.rubric.name)
+    b2 = Bb.objects.select_related("rubric").get(pk=40)
+    print(b2.rubric.name)
+    return HttpResponse(" ")
