@@ -15,7 +15,7 @@ class SpareAdmin(admin.ModelAdmin):
 
 @admin.register(Rubric)
 class RubricAdmin(admin.ModelAdmin):
-    list_display = ("name",)
+    list_display = ("name", "pk")
     actions = ["delete_selected"]
 
 
