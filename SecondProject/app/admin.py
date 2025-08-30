@@ -4,6 +4,7 @@ from .models import *
 admin.site.register(AdvUser)
 admin.site.register(Measure)
 admin.site.register(Machine)
+admin.site.register(SuperRubric)
 
 
 @admin.register(Spare)

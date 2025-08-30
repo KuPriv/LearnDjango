@@ -4,6 +4,7 @@ from datetime import datetime, timezone, timedelta
 
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import redirect_to_login
 from django.core.paginator import Paginator
 from django.db.models import (
@@ -556,7 +557,7 @@ def check_resolve(request):
 def add(request): ...
 
 
-class BbCreateView(CreateView):
+class BbCreateView(LoginRequiredMixin, CreateView):
     template_name = "app/create.html"
     model = Bb
     fields = ["title", "price", "rubric"]
@@ -740,6 +741,9 @@ def edit(request, pk):
     login_url=reverse_lazy("accounts:login"),
 )
 def rubrics(request):
+    # Если это CBV используем AccessMixin
+    # Также есть LoginRequiredMixin, UserPassesTestMixin
+    # (test_func переопределить), PermissionRequiredMixin
     RubricFormSet = modelformset_factory(
         Rubric,
         fields=("name",),
@@ -784,3 +788,21 @@ def bbs(request, rubric_id):
         formset = BbsFormSet(instance=rubric)
     context = {"formset": formset, "current_rubric": rubric}
     return render(request, "app/bbs.html", context)
+
+
+def test_select_prefetch_related(request):
+    b = get_object_or_404(Bb, pk=40)
+    print(b.rubric.name)
+    b2 = Bb.objects.select_related("rubric").get(pk=40)
+    print(b2.rubric.name)
+    b3 = Bb.objects.select_related("rubric__super_rubric").get(pk=70)
+    print(b3.rubric.super_rubric.title)
+    b4 = Bb.objects.select_related("rubric", "rubric__super_rubric").get(pk=70)
+    print(b4.rubric.super_rubric.title)
+    r = Rubric.objects.prefetch_related("entries").first()
+    for bb in r.entries.all():
+        print(bb.title)
+    m = Machine.objects.prefetch_related("spares").first()
+    for s in m.spares.all():
+        print(s.name)
+    return HttpResponse(" ")

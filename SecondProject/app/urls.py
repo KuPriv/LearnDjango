@@ -74,4 +74,5 @@ urlpatterns = [
     path("register_user/", RegisterUserFormView.as_view(), name="register_user"),
     path("rubrics/edit/", views.rubrics, name="rubric_set"),
     path("bbs_list/<int:rubric_id>", views.bbs, name="bbs_list"),
+    path("tests/", views.test_select_prefetch_related),
 ]

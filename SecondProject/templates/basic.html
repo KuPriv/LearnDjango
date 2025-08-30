@@ -12,7 +12,9 @@
  </header>
 <nav>
     <a href="{% url 'app:index' %}">Главная</a>
+    {% if perms.app.add_bb %}
     <a href="{% url 'app:add' %}">Добавить</a>
+    {% endif %}
     <a href="{% url 'app:register_user' %}"> Регистрация</a>
     <a href="{% url 'app:archive' %}"> Какие дни есть? </a>
     <a href="{% url 'app:rubric_set' %}">Список рубрик (формсет)</a>
