@@ -799,4 +799,10 @@ def test_select_prefetch_related(request):
     print(b3.rubric.super_rubric.title)
     b4 = Bb.objects.select_related("rubric", "rubric__super_rubric").get(pk=70)
     print(b4.rubric.super_rubric.title)
+    r = Rubric.objects.prefetch_related("entries").first()
+    for bb in r.entries.all():
+        print(bb.title)
+    m = Machine.objects.prefetch_related("spares").first()
+    for s in m.spares.all():
+        print(s.name)
     return HttpResponse(" ")
