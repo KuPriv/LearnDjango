@@ -795,4 +795,8 @@ def test_select_prefetch_related(request):
     print(b.rubric.name)
     b2 = Bb.objects.select_related("rubric").get(pk=40)
     print(b2.rubric.name)
+    b3 = Bb.objects.select_related("rubric__super_rubric").get(pk=70)
+    print(b3.rubric.super_rubric.title)
+    b4 = Bb.objects.select_related("rubric", "rubric__super_rubric").get(pk=70)
+    print(b4.rubric.super_rubric.title)
     return HttpResponse(" ")
