@@ -24,6 +24,7 @@ from django.db.models import (
     Subquery,
     OuterRef,
     Exists,
+    Prefetch,
 )
 from django.forms import (
     modelform_factory,
@@ -804,5 +805,39 @@ def test_select_prefetch_related(request):
         print(bb.title)
     m = Machine.objects.prefetch_related("spares").first()
     for s in m.spares.all():
+        print(s.name)
+
+    print("Класс Prefetch ///")
+    pr1 = Prefetch("entries", queryset=Bb.objects.order_by("title"))
+    r = Rubric.objects.prefetch_related(pr1).first()
+    for bb in r.entries.all():
+        print(bb.title)
+
+    print("pr 2 //// ")
+    pr2 = Prefetch(
+        "entries", queryset=Bb.objects.filter(price__lt=1000), to_attr="expensive"
+    )
+    r = Rubric.objects.prefetch_related(pr2).get(pk=10)
+    for bb in r.expensive:
+        print(bb.title)
+
+    bb = Bb.objects.defer("content").get(pk=41)
+    print(bb.title)
+    print(bb.content)
+
+    bb = Bb.objects.only("title", "price").get(pk=41)
+    # defer - отдельные запросы в будущем для заданных полей
+    # only - извлекает только эти поля запросами, можно вызвать defer потом, но вызов only сбрасывает
+    # only и defer, определенные до этого
+    return HttpResponse(" ")
+
+
+def test_through_in_models(request):
+    for k in Kit.objects.filter(spare__name="Болт"):
+        print(k.spare.name, k.machine.name, k.count)
+
+    m1 = Machine.objects.get(name="SameAsWell")
+    print(m1)
+    for s in m1.spares.all():
         print(s.name)
     return HttpResponse(" ")

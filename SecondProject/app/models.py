@@ -132,15 +132,32 @@ class AdvUser(models.Model):
 class Spare(models.Model):
     name = models.CharField(max_length=30)
 
+    def __str__(self):
+        return self.name
+
 
 class Machine(models.Model):
     name = models.CharField(max_length=30)
-    spares = models.ManyToManyField(Spare, related_name="machines")
+    spares = models.ManyToManyField(
+        Spare, through="Kit", through_fields=("machine", "spare")
+    )
 
     def clean(self):
         errors = {}
         if not self.name:
             errors["name"] = ValidationError("Укажите название")
+
+    def __str__(self):
+        return self.name
+
+
+class Kit(models.Model):
+    machine = models.ForeignKey(Machine, on_delete=models.CASCADE)
+    spare = models.ForeignKey(Spare, on_delete=models.CASCADE)
+    count = models.IntegerField()
+
+    def __str__(self):
+        return self.machine.name + " + " + self.spare.name
 
 
 class Magazine(models.Model):

@@ -3,7 +3,6 @@ from .models import *
 
 admin.site.register(AdvUser)
 admin.site.register(Measure)
-admin.site.register(Machine)
 admin.site.register(SuperRubric)
 
 
@@ -15,7 +14,7 @@ class SpareAdmin(admin.ModelAdmin):
 
 @admin.register(Rubric)
 class RubricAdmin(admin.ModelAdmin):
-    list_display = ("name",)
+    list_display = ("name", "pk")
     actions = ["delete_selected"]
 
 
@@ -40,4 +39,20 @@ class BbAdmin(admin.ModelAdmin):
         "updated_at",
         "pk",
     )
+    actions = ["delete_selected"]
+
+
+class KitInline(admin.TabularInline):
+    model = Kit
+    extra = 0
+
+
+@admin.register(Machine)
+class MachineAdmin(admin.ModelAdmin):
+    inlines = [KitInline]
+
+
+@admin.register(Kit)
+class KitAdmin(admin.ModelAdmin):
+    list_display = ("machine", "spare", "count", "pk")
     actions = ["delete_selected"]
