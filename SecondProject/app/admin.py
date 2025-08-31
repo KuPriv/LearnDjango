@@ -3,7 +3,6 @@ from .models import *
 
 admin.site.register(AdvUser)
 admin.site.register(Measure)
-admin.site.register(Machine)
 admin.site.register(SuperRubric)
 
 
@@ -41,6 +40,16 @@ class BbAdmin(admin.ModelAdmin):
         "pk",
     )
     actions = ["delete_selected"]
+
+
+class KitInline(admin.TabularInline):
+    model = Kit
+    extra = 0
+
+
+@admin.register(Machine)
+class MachineAdmin(admin.ModelAdmin):
+    inlines = [KitInline]
 
 
 @admin.register(Kit)

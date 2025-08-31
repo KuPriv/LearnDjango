@@ -830,3 +830,9 @@ def test_select_prefetch_related(request):
     # only - извлекает только эти поля запросами, можно вызвать defer потом, но вызов only сбрасывает
     # only и defer, определенные до этого
     return HttpResponse(" ")
+
+
+def test_through_in_models(request):
+    for k in Kit.objects.filter(spare__name="Болт"):
+        print(k.spare.name, k.machine.name, k.count)
+    return HttpResponse(" ")
