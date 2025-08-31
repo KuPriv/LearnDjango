@@ -41,3 +41,9 @@ class BbAdmin(admin.ModelAdmin):
         "pk",
     )
     actions = ["delete_selected"]
+
+
+@admin.register(Kit)
+class KitAdmin(admin.ModelAdmin):
+    list_display = ("machine", "spare", "count", "pk")
+    actions = ["delete_selected"]

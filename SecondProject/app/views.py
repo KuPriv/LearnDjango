@@ -827,6 +827,6 @@ def test_select_prefetch_related(request):
 
     bb = Bb.objects.only("title", "price").get(pk=41)
     # defer - отдельные запросы в будущем для заданных полей
-    # only - извлекает только эти поля запросами, можно переопределить defer потом, но вызов only сбрасывает
-    # only и defer определенные до этого
+    # only - извлекает только эти поля запросами, можно вызвать defer потом, но вызов only сбрасывает
+    # only и defer, определенные до этого
     return HttpResponse(" ")
