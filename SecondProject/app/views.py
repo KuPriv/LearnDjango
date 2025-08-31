@@ -835,4 +835,9 @@ def test_select_prefetch_related(request):
 def test_through_in_models(request):
     for k in Kit.objects.filter(spare__name="Болт"):
         print(k.spare.name, k.machine.name, k.count)
+
+    m1 = Machine.objects.get(name="SameAsWell")
+    print(m1)
+    for s in m1.spares.all():
+        print(s.name)
     return HttpResponse(" ")
