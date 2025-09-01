@@ -841,3 +841,18 @@ def test_through_in_models(request):
     for s in m1.spares.all():
         print(s.name)
     return HttpResponse(" ")
+
+
+def polymorfic_relations(request):
+    m1 = Machine.objects.get(name="SameAsWell")
+    s1 = Spare.objects.get(name="Винтик")
+    # n1 = Note.objects.create(content="Самая полезная деталь наверн", content_object=s1)
+    # n2 = Note.objects.create(content="В нем используются винтики", content_object=m1)
+    # print(n1.content_object.name)
+    # print(n2.content_object.name)
+    for n in Note.objects.all():
+        print(n.content, n.content_object.name)
+    # filter нельзя использовать
+    # в формах genericforeignkey можно создать generic_inlineformset_factory
+    # для работы со связанными записями ct_field= имя поля хранящего типя связываемой модели
+    return HttpResponse(" ")

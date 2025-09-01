@@ -1,3 +1,5 @@
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
+from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.contrib.auth.models import User
@@ -12,6 +14,14 @@ class TimeStampedModel(models.Model):
 
     class Meta:
         abstract = True
+
+
+class Note(models.Model):
+    content = models.TextField()
+
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey(ct_field="content_type", fk_field="object_id")
 
 
 class SuperRubric(models.Model):
@@ -141,6 +151,8 @@ class Machine(models.Model):
     spares = models.ManyToManyField(
         Spare, through="Kit", through_fields=("machine", "spare")
     )
+
+    notes = GenericRelation("Note")
 
     def clean(self):
         errors = {}
