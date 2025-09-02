@@ -864,4 +864,7 @@ def view_inherent_models(request):
     pm = PrivateMessage.objects.get(user=u)
     print(pm.content)
     print(pm.user)
+    m = pm.message_ptr
+    print(m)
+    print(m.privatemessage)
     return HttpResponse(" ")
