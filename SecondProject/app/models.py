@@ -194,3 +194,11 @@ class Magazine(models.Model):
                 condition=models.Q(price__lte=1000),
             )
         ]
+
+
+class Message(models.Model):
+    content = models.TextField()
+
+
+class PrivateMessage(Message):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
