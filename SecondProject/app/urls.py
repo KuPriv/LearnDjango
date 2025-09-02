@@ -77,4 +77,5 @@ urlpatterns = [
     path("tests/", views.test_select_prefetch_related),
     path("tests_through/", views.test_through_in_models),
     path("poly/", views.polymorfic_relations),
+    path("send_m/", views.view_inherent_models),
 ]

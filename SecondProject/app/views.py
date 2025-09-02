@@ -856,3 +856,12 @@ def polymorfic_relations(request):
     # в формах genericforeignkey можно создать generic_inlineformset_factory
     # для работы со связанными записями ct_field= имя поля хранящего типя связываемой модели
     return HttpResponse(" ")
+
+
+def view_inherent_models(request):
+    u = User.objects.get(username="user")
+    # pm = PrivateMessage.objects.create(content="Привет!", user=u)
+    pm = PrivateMessage.objects.get(user=u)
+    print(pm.content)
+    print(pm.user)
+    return HttpResponse(" ")
