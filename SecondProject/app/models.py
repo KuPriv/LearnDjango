@@ -202,3 +202,4 @@ class Message(models.Model):
 
 class PrivateMessage(Message):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    message = models.OneToOneField(Message, on_delete=models.CASCADE, parent_link=True)
