@@ -868,3 +868,9 @@ def view_inherent_models(request):
     print(m)
     print(m.privatemessage)
     return HttpResponse(" ")
+
+
+def test_abstract_and_proxy_models(request):
+    for r in RevRubric.objects.all():
+        print(r.name)
+    return HttpResponse(" ")

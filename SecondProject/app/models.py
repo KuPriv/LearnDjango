@@ -202,3 +202,25 @@ class Message(models.Model):
 
 class PrivateMessage(Message):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+
+class Message1(models.Model):
+    content = models.TextField()
+    name = models.CharField()
+    email = models.EmailField()
+
+    class Meta:
+        abstract = True
+
+
+class PrivateMessage1(Message):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=30)
+
+    email = None
+
+
+class RevRubric(Rubric):
+    class Meta:
+        proxy = True
+        ordering = ["-name"]
