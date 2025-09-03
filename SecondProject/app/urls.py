@@ -75,5 +75,8 @@ urlpatterns = [
     path("rubrics/edit/", views.rubrics, name="rubric_set"),
     path("bbs_list/<int:rubric_id>", views.bbs, name="bbs_list"),
     path("tests/", views.test_select_prefetch_related),
-    path("tests_through", views.test_through_in_models),
+    path("tests_through/", views.test_through_in_models),
+    path("poly/", views.polymorfic_relations),
+    path("send_m/", views.view_inherent_models),
+    path("abs_prox/", views.test_abstract_and_proxy_models),
 ]

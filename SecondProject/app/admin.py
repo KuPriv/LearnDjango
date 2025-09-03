@@ -4,6 +4,8 @@ from .models import *
 admin.site.register(AdvUser)
 admin.site.register(Measure)
 admin.site.register(SuperRubric)
+admin.site.register(Message)
+admin.site.register(PrivateMessage)
 
 
 @admin.register(Spare)
