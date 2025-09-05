@@ -8,6 +8,14 @@ from django.utils import timezone
 from django.core.validators import EmailValidator
 
 
+class RubricManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().order_by("order", "name")
+
+    def order_by_bb_count(self):
+        return super().get_queryset().annotate(cnt=models.Count("bb")).order_by("-cnt")
+
+
 class TimeStampedModel(models.Model):
     created_at = models.DateTimeField(default=timezone.now, editable=False)
     updated_at = models.DateTimeField(auto_now=True)
@@ -39,6 +47,7 @@ class Rubric(models.Model):
         null=True,
         blank=True,
     )
+    objects = RubricManager()
 
     class Meta:
         db_table = "rubric"
