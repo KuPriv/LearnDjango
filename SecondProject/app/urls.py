@@ -79,4 +79,5 @@ urlpatterns = [
     path("poly/", views.polymorfic_relations),
     path("send_m/", views.view_inherent_models),
     path("abs_prox/", views.test_abstract_and_proxy_models),
+    path("test_manager/", views.test_dispatcher_manager),
 ]

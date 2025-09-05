@@ -874,3 +874,9 @@ def test_abstract_and_proxy_models(request):
     for r in RevRubric.objects.all():
         print(r.name)
     return HttpResponse(" ")
+
+
+def test_dispatcher_manager(request):
+    r = Rubric.objects.all()
+    print(r)
+    return HttpResponse(" ")
