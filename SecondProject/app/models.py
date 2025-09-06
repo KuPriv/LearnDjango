@@ -8,6 +8,11 @@ from django.utils import timezone
 from django.core.validators import EmailValidator
 
 
+class BbManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().order_by("price")
+
+
 class RubricManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().order_by("order", "name")
@@ -65,6 +70,8 @@ class Bb(TimeStampedModel):
     title = models.CharField(max_length=50)
     content = models.TextField(blank=True, null=True, default=None)
     price = models.IntegerField(blank=True, null=True)
+    objects = models.Manager()
+    by_price = BbManager()
     rubric = models.ForeignKey(
         Rubric,
         on_delete=models.PROTECT,

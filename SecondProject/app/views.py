@@ -879,4 +879,7 @@ def test_abstract_and_proxy_models(request):
 def test_dispatcher_manager(request):
     r = Rubric.objects.all()
     print(r)
+    r = Rubric.objects.get(name="Мяу")
+    print(r.entries.all())
+    print(r.entries(manager="by_price").all())
     return HttpResponse(" ")
