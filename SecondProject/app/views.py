@@ -886,3 +886,8 @@ def test_dispatcher_manager(request):
     print(r.entries(manager="by_price").all())
     print(Rubric.objects.order_by_bb_count())
     return HttpResponse(" ")
+
+
+def search(request):
+    if request.method == 'POST':
+        
