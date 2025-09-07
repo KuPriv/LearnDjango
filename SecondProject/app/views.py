@@ -882,4 +882,5 @@ def test_dispatcher_manager(request):
     r = Rubric.objects.get(name="Мяу")
     print(r.entries.all())
     print(r.entries(manager="by_price").all())
+    print(Rubric.objects.order_by_bb_count())
     return HttpResponse(" ")
