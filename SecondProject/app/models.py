@@ -57,7 +57,7 @@ class Rubric(models.Model):
         null=True,
         blank=True,
     )
-    objects = RubricManager()
+    objects = RubricQuerySet.as_manager()
 
     class Meta:
         db_table = "rubric"
