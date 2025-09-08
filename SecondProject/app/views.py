@@ -889,5 +889,5 @@ def test_dispatcher_manager(request):
 
 
 def search(request):
-    if request.method == 'POST':
-        
+    if request.method == "POST":
+        ...
