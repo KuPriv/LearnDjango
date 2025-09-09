@@ -7,6 +7,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import redirect_to_login
 from django.core.paginator import Paginator
+from django.db import transaction
 from django.db.models import (
     F,
     Q,
@@ -876,7 +877,17 @@ def test_abstract_and_proxy_models(request):
     return HttpResponse(" ")
 
 
+@transaction.non_atomic_requests
 def test_dispatcher_manager(request):
     r = Rubric.objects.all()
     print(r)
+    r = Rubric.objects.get(name="Мяу")
+    print(r.entries.all())
+    print(r.entries(manager="by_price").all())
+    print(Rubric.objects.order_by_bb_count())
     return HttpResponse(" ")
+
+
+def search(request):
+    if request.method == "POST":
+        ...
