@@ -28,6 +28,6 @@ def test_send_mail(mailoutbox):
 
 @pytest.mark.django_db
 def test_indexpage(client):
-    url = reverse("index")
-    response = client.get(url)
+    url = reverse("app:index")
+    response = client.get(url, follow=True)
     assert response.status_code == 200
