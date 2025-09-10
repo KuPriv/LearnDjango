@@ -1,3 +1,4 @@
+import pytest
 from django.urls import reverse
 from django.core import mail
 
@@ -23,3 +24,10 @@ def test_send_mail(mailoutbox):
     assert m.body == "body"
     assert m.from_email == "from@example.com"
     assert m.to == ["to@example.com"]
+
+
+@pytest.mark.django_db
+def test_indexpage(client):
+    url = reverse("index")
+    response = client.get(url)
+    assert response.status_code == 200
