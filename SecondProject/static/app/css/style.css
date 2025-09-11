@@ -1,0 +1,8 @@
+input.required {
+    border: 1px solid red;
+}
+
+input.delete {
+    border: 1px solid red;
+    background-color: black;
+}

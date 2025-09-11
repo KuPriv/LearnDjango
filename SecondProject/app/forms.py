@@ -8,6 +8,8 @@ from .models import Bb, Rubric
 class SearchForm(forms.Form):
     keyword = forms.CharField(max_length=20, label="Искомое слово")
     rubric = forms.ModelChoiceField(queryset=Rubric.objects.all(), label="Рубрика")
+    error_css_class = "error"
+    required_css_class = "required"
 
 
 class BbForm(ModelForm):
