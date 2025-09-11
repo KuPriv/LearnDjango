@@ -1,0 +1,16 @@
+{% extends 'basic.html' %}
+
+{% block title %}
+Find my ckkk...
+{% endblock %}
+
+
+{% block content %}
+<form method="POST">
+    <h1> Search Results.</h1>
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    {{ form.as_p }}
+    <input type="submit" value="Поиск">
+</form>
+{% endblock %}

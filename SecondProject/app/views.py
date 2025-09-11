@@ -898,6 +898,7 @@ def search(request):
             bbs = Bb.objects.filter(title__icontains=keyword, rubric=rubric_id)
             context = {"bbs": bbs}
             return render(request, "app/search_results.html", context)
+
     context = {"form": sf}
     return render(request, "app/search.html", context)
 

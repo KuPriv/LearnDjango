@@ -1,0 +1,13 @@
+{% extends 'basic.html' %}
+
+{% block title %}
+  Results of Searching. {{ bbs.first.entries.name }}
+{% endblock %}
+
+{% block content %}
+{% for bb in bbs %}
+<h2>Title: {{ bb.title }}</h2>
+<h2>Content: {{ bb.content }}</h2>
+<h2>Price: {{ bb.price }}</h2>
+{% endfor %}
+{% endblock %}
