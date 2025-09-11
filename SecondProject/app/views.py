@@ -34,6 +34,7 @@ from django.forms import (
     modelformset_factory,
     BaseModelFormSet,
     inlineformset_factory,
+    formset_factory,
 )
 from django.forms.formsets import ORDERING_FIELD_NAME
 from django.http import (
@@ -72,7 +73,7 @@ from django.views.generic import (
 )
 from django.views.generic.detail import SingleObjectMixin
 
-from .forms import BbForm, RegisterUserForm
+from .forms import BbForm, RegisterUserForm, SearchForm
 from .models import *
 
 
@@ -889,5 +890,28 @@ def test_dispatcher_manager(request):
 
 
 def search(request):
+    sf = SearchForm(request.POST or None)
     if request.method == "POST":
-        ...
+        if sf.is_valid():
+            keyword = sf.cleaned_data["keyword"]
+            rubric_id = sf.cleaned_data["rubric"].pk
+            bbs = Bb.objects.filter(title__icontains=keyword, rubric=rubric_id)
+            context = {"bbs": bbs}
+            return render(request, "app/search_results.html", context)
+    context = {"form": sf}
+    return render(request, "app/search.html", context)
+
+
+def formset_proccessing(request):
+    FS = formset_factory(SearchForm, extra=3, can_order=True, can_delete=True)
+    formset = FS(request.POST or None)
+    if request.method == "POST":
+        if formset.is_valid():
+            for form in formset:
+                if form.cleaned_data and not form.cleaned_data["DELETE"]:
+                    keyword = form.cleaned_data["keyword"]
+                    rubric_id = form.cleaned_data["rubric"].pk
+                    order = form.cleaned_data["ORDER"]
+            return render(request, "app/process_result.html")
+    context = {"formset": formset}
+    return render(request, "app/formset.html", context)
