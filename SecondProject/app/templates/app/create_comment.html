@@ -1,0 +1,12 @@
+{% extends 'basic.html' %}
+
+{% block title %} Add comment {% endblock %}
+
+{% block content %}
+<h3>Bb name: {{ bb.title }}</h3>
+<form method='POST'>
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="leave a comment.">
+</form>
+{% endblock %}

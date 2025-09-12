@@ -82,4 +82,5 @@ urlpatterns = [
     path("test_manager/", views.test_dispatcher_manager),
     path("search/", views.search, name="search"),
     path("search_formset/", views.formset_proccessing, name="search_formset"),
+    path("add_comment/<int:bb_pk>", views.write_comment, name="add_comment"),
 ]

@@ -13,6 +13,7 @@
     <p> Паблишед: {{ bb.created_at }}</p>
     <p><a href="{% url 'app:edit' pk=bb.pk %}"> Изменить </a></p>
     <p><a href="{% url 'app:delete' pk=bb.pk %}"> Удалить </a></p>
+    <p><a href="{% url 'app:add_comment' bb_pk=bb.pk %}"> Оставить комментарий</a></p>
 </div>
 {% endfor %}
 {% endblock %}

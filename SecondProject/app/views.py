@@ -73,7 +73,7 @@ from django.views.generic import (
 )
 from django.views.generic.detail import SingleObjectMixin
 
-from .forms import BbForm, RegisterUserForm, SearchForm
+from .forms import BbForm, RegisterUserForm, SearchForm, CommentForm
 from .models import *
 
 
@@ -922,3 +922,18 @@ def formset_proccessing(request):
             return render(request, "app/process_result.html", context)
     context = {"formset": formset}
     return render(request, "app/formset.html", context)
+
+
+@login_required(login_url="/accounts/login/")
+def write_comment(request, bb_pk):
+    comment_form = CommentForm(request.POST or None)
+    bb = get_object_or_404(Bb, id=bb_pk)
+    if request.method == "POST":
+        if comment_form.is_valid():
+            comment = comment_form.save(commit=False)
+            comment.user = request.user
+            comment.bb = bb
+            comment.save()
+            return redirect(reverse("app:index"))
+    context = {"form": comment_form, "bb": bb}
+    return render(request, "app/create_comment.html", context)
