@@ -1,8 +1,9 @@
+from captcha.fields import CaptchaField
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.forms import ModelForm, DecimalField, Select
 from django import forms
-from .models import Bb, Rubric
+from .models import Bb, Rubric, Comment
 
 
 class SearchForm(forms.Form):
@@ -93,3 +94,15 @@ class RegisterUserForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+
+
+class CommentForm(forms.ModelForm):
+    captcha = CaptchaField(
+        generator="captcha.helpers.math_challenge",
+        label="Введите текст с картинки",
+        error_messages={"invalid": "Неправильный текст!"},
+    )
+
+    class Meta:
+        model = Comment
+        fields = ["comment"]
