@@ -81,4 +81,5 @@ urlpatterns = [
     path("abs_prox/", views.test_abstract_and_proxy_models),
     path("test_manager/", views.test_dispatcher_manager),
     path("search/", views.search, name="search"),
+    path("search_formset/", views.formset_proccessing, name="search_formset"),
 ]

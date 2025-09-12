@@ -245,3 +245,8 @@ class RevRubric(Rubric):
     class Meta:
         proxy = True
         ordering = ["-name"]
+
+
+class Comment(models.Model):
+    comment = models.CharField(max_length=200)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)

@@ -905,14 +905,20 @@ def search(request):
 
 def formset_proccessing(request):
     FS = formset_factory(SearchForm, extra=3, can_order=True, can_delete=True)
-    formset = FS(request.POST or None)
+    formset = FS(request.POST or None, auto_id=False)
     if request.method == "POST":
         if formset.is_valid():
+            valid_forms = []
             for form in formset:
                 if form.cleaned_data and not form.cleaned_data["DELETE"]:
-                    keyword = form.cleaned_data["keyword"]
-                    rubric_id = form.cleaned_data["rubric"].pk
-                    order = form.cleaned_data["ORDER"]
-            return render(request, "app/process_result.html")
+                    valid_forms.append(
+                        {
+                            "keyword": form.cleaned_data["keyword"],
+                            "rubric_id": form.cleaned_data["rubric"].pk,
+                            "order": form.cleaned_data["ORDER"],
+                        }
+                    )
+            context = {"valid_forms": valid_forms}
+            return render(request, "app/process_result.html", context)
     context = {"formset": formset}
     return render(request, "app/formset.html", context)
