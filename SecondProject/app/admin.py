@@ -58,3 +58,9 @@ class MachineAdmin(admin.ModelAdmin):
 class KitAdmin(admin.ModelAdmin):
     list_display = ("machine", "spare", "count", "pk")
     actions = ["delete_selected"]
+
+
+@admin.register(Comment)
+class CommentAdmin(admin.ModelAdmin):
+    list_display = ("user", "bb", "comment")
+    actions = ["delete_selected"]
