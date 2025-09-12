@@ -1,0 +1,22 @@
+{% extends 'basic.html' %}
+
+{% block title %}
+Search FormSet
+{% endblock %}
+
+{% block content %}
+<h2> Fill in multiple search forms</h2>
+<form method="POST">
+    {% csrf_token %}
+    {{ formset.management_form }}
+
+    <table>
+        {% for form in formset %}
+        <tr>
+            {{ form }}
+        </tr>
+        {% endfor %}
+    </table>
+    <button type="submit">Search</button>
+</form>
+{% endblock %}

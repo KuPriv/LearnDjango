@@ -19,7 +19,8 @@
 {{ 656564|filesizeformat }}
 {{ bbs.first.title|join:','}}
 {{ bbs.first.title|make_list}}
-
+</br>
+<a href="{% url 'app:search_formset' %}"> Формсет поиск</a>
 <div>
     {% if page.has_previous %}
     <a href="?page={{ page.previous_page_number }}"> &lt;</a>
