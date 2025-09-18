@@ -1,5 +1,16 @@
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.postgres import constraints
+from django.contrib.postgres.constraints import ExclusionConstraint
+from django.contrib.postgres.fields import (
+    DateTimeRangeField,
+    ArrayField,
+    HStoreField,
+    CICharField,
+    JSONField,
+    RangeOperators,
+)
+from django.contrib.postgres.indexes import GistIndex
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.contrib.auth.models import User
@@ -256,3 +267,69 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"{self.user.username} оставил {self.comment} in {self.bb}"
+
+
+class PGSRoomReserving(models.Model):
+    name = models.CharField(max_length=20, verbose_name="Помещение")
+    reserving = DateTimeRangeField(verbose_name="Время резервирования")
+    cancelled = models.BooleanField(
+        default=False, verbose_name="Отменить резервирование"
+    )
+
+    class Meta:
+        indexes = [
+            GistIndex(
+                fields=["name", "reserving"],
+                name="i_pgsrr_reserving",
+                opclasses=(
+                    "gist_trgm_ops",
+                    "range_ops",
+                ),
+                fillfactor=50,
+            )
+        ]
+        constraints = [
+            ExclusionConstraint(
+                name="c_pgsrr_reserving",
+                expressions=[
+                    ("name", RangeOperators.EQUAL),
+                    ("reserving", RangeOperators.EQUAL),
+                ],
+                condition=models.Q(cancelled=False),
+            )
+        ]
+
+    def __str__(self):
+        return self.name
+
+
+class PGSRubric(models.Model):
+    name = models.CharField(max_length=20, verbose_name="Имя")
+    description = models.TextField(verbose_name="Описание")
+    tags = ArrayField(base_field=models.CharField(max_length=20), verbose_name="Теги")
+
+    class Meta:
+        indexes = [
+            models.Index(
+                fields=("name", "description"),
+                name="i_pgsrubric_name_description",
+                opclasses=(
+                    "gist_trgm_ops",
+                    "gist_trgm_ops",
+                ),
+            )
+        ]
+        constraints = [
+            ExclusionConstraint(
+                name="c_pgsrubric_name_description",
+                expressions=[
+                    ("name", RangeOperators.EQUAL),
+                    ("description", RangeOperators.EQUAL),
+                ],
+            )
+        ]
+
+
+class PGSProject2(models.Model):
+    name = models.CharField(max_length=40, verbose_name="Название")
+    platforms = HStoreField(verbose_name="Использование платформы")
