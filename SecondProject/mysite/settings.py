@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     "accounts",
     "django_extensions",
     "captcha",
+    "django.contrib.postgres",
 ]
 
 MIDDLEWARE = [
