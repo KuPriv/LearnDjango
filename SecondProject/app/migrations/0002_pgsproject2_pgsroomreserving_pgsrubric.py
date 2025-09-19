@@ -5,6 +5,7 @@ import django.contrib.postgres.fields
 import django.contrib.postgres.fields.hstore
 import django.contrib.postgres.fields.ranges
 import django.contrib.postgres.indexes
+from django.contrib.postgres.operations import CreateExtension, BtreeGistExtension
 from django.db import migrations, models
 
 
@@ -15,6 +16,8 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        CreateExtension(name="hstore"),
+        BtreeGistExtension(),
         migrations.CreateModel(
             name="PGSProject2",
             fields=[
