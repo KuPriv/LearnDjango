@@ -7,7 +7,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import redirect_to_login
 from django.core.paginator import Paginator
-from django.db import transaction
+from django.db import transaction, IntegrityError
 from django.db.models import (
     F,
     Q,
@@ -937,3 +937,25 @@ def write_comment(request, bb_pk):
             return redirect(reverse("app:index"))
     context = {"form": comment_form, "bb": bb}
     return render(request, "app/create_comment.html", context)
+
+
+@transaction.atomic
+def create_pgsroomserving(request):
+    if request.method != "POST":
+        return HttpResponse("Use POST method to create reservations.")
+
+    rr1 = PGSRoomReserving()
+    rr1.name = "Large Hall"
+    rr1.reserving = (datetime(2019, 12, 31, 12), datetime(2019, 12, 31, 16))
+    rr1.save()
+
+    rr2 = PGSRoomReserving()
+    rr2.name = "Small Hall"
+    rr2.reserving = (datetime(2019, 12, 30, 10, 15), datetime(2019, 12, 30, 11, 20))
+    try:
+        PGSRoomReserving.objects.bulk_create([rr1, rr2])
+    except IntegrityError as exc:
+        transaction.set_rollback(True)
+        return HttpResponse(f"Failed to create: {exc}", status=400)
+
+    return HttpResponse("Created.")
