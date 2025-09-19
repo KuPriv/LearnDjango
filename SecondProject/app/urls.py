@@ -83,4 +83,9 @@ urlpatterns = [
     path("search/", views.search, name="search"),
     path("search_formset/", views.formset_proccessing, name="search_formset"),
     path("add_comment/<int:bb_pk>", views.write_comment, name="add_comment"),
+    path(
+        "pgsroom-reserving/create/",
+        views.create_pgsroomserving,
+        name="pgsroom_reservation_create",
+    ),
 ]
