@@ -64,3 +64,15 @@ class KitAdmin(admin.ModelAdmin):
 class CommentAdmin(admin.ModelAdmin):
     list_display = ("user", "bb", "comment")
     actions = ["delete_selected"]
+
+
+@admin.register(PGSRoomReserving)
+class PGSRoomReservingAdmin(admin.ModelAdmin):
+    list_display = ("name", "reserving", "cancelled")
+    actions = ["delete_selected"]
+
+
+@admin.register(PGSRubric)
+class PGSRubricAdmin(admin.ModelAdmin):
+    list_display = ("name", "description", "tags", "pk")
+    actions = ["delete_selected"]
