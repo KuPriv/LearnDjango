@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.postgres import constraints
@@ -11,6 +13,11 @@ from django.contrib.postgres.fields import (
     RangeOperators,
 )
 from django.contrib.postgres.indexes import GistIndex
+from django.contrib.postgres.validators import (
+    RangeMinValueValidator,
+    RangeMaxValueValidator,
+    KeysValidator,
+)
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.contrib.auth.models import User
@@ -271,7 +278,13 @@ class Comment(models.Model):
 
 class PGSRoomReserving(models.Model):
     name = models.CharField(max_length=20, verbose_name="Помещение")
-    reserving = DateTimeRangeField(verbose_name="Время резервирования")
+    reserving = DateTimeRangeField(
+        verbose_name="Время резервирования",
+        validators=[
+            RangeMinValueValidator(limit_value=datetime(2000, 1, 1)),
+            RangeMaxValueValidator(limit_value=datetime(3000, 1, 1)),
+        ],
+    )
     cancelled = models.BooleanField(
         default=False, verbose_name="Отменить резервирование"
     )
@@ -332,4 +345,15 @@ class PGSRubric(models.Model):
 
 class PGSProject2(models.Model):
     name = models.CharField(max_length=40, verbose_name="Название")
-    platforms = HStoreField(verbose_name="Использование платформы")
+    platforms = HStoreField(
+        verbose_name="Использование платформы",
+        validators=[
+            KeysValidator(
+                (
+                    "client",
+                    "server",
+                ),
+                strict=True,
+            )
+        ],
+    )
