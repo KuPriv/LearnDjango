@@ -88,4 +88,6 @@ urlpatterns = [
         views.create_pgsroomserving,
         name="pgsroom_reservation_create",
     ),
+    path("pgs-rubric/create/", views.create_pgsrubric, name="pgs_rubric_create"),
+    path("pgs-project/create/", views.create_pgsproject, name="pgs_project_create"),
 ]
