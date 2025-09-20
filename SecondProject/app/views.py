@@ -72,6 +72,7 @@ from django.views.generic import (
     RedirectView,
 )
 from django.views.generic.detail import SingleObjectMixin
+from psycopg2._range import DateTimeTZRange
 
 from .forms import BbForm, RegisterUserForm, SearchForm, CommentForm
 from .models import *
@@ -941,21 +942,56 @@ def write_comment(request, bb_pk):
 
 @transaction.atomic
 def create_pgsroomserving(request):
-    if request.method != "POST":
-        return HttpResponse("Use POST method to create reservations.")
 
-    rr1 = PGSRoomReserving()
-    rr1.name = "Large Hall"
-    rr1.reserving = (datetime(2019, 12, 31, 12), datetime(2019, 12, 31, 16))
-    rr1.save()
+    exist1 = PGSRoomReserving.objects.filter(name="Large Hall").exists()
+    if not exist1:
+        rr1 = PGSRoomReserving()
+        rr1.name = "Large Hall"
+        rr1.reserving = (datetime(2019, 12, 31, 12), datetime(2019, 12, 31, 16))
+    exist2 = PGSRoomReserving.objects.filter(name="Small Hall").exists()
+    if not exist2:
+        rr2 = PGSRoomReserving()
+        rr2.name = "Small Hall"
+        rr2.reserving = (datetime(2019, 12, 30, 10, 15), datetime(2019, 12, 30, 11, 20))
 
-    rr2 = PGSRoomReserving()
-    rr2.name = "Small Hall"
-    rr2.reserving = (datetime(2019, 12, 30, 10, 15), datetime(2019, 12, 30, 11, 20))
-    try:
-        PGSRoomReserving.objects.bulk_create([rr1, rr2])
-    except IntegrityError as exc:
-        transaction.set_rollback(True)
-        return HttpResponse(f"Failed to create: {exc}", status=400)
+    if not exist1 and not exist2:
+        try:
+            PGSRoomReserving.objects.bulk_create([rr1, rr2])
+        except IntegrityError as exc:
+            transaction.set_rollback(True)
+            return HttpResponse(f"Failed to create: {exc}", status=400)
 
+    rr3, created = PGSRoomReserving.objects.get_or_create(
+        name="Столовая",
+        reserving=DateTimeTZRange(
+            lower=datetime(2019, 12, 31, 20, 30),
+            upper=datetime(2020, 1, 1, 2),
+            bounds="[]",
+        ),
+    )
+    rr = PGSRoomReserving.objects.get(pk=1)
+    print(rr.reserving.lower_inc)
+    print(rr.reserving.upper_inc)
+
+    return HttpResponse("Created.")
+
+
+def create_pgsrubric(request):
+    r, created = PGSRubric.objects.get_or_create(
+        name="Недвижимость",
+        description="Помещения пам-пам",
+        tags=(
+            "дом",
+            "дача",
+        ),
+    )
+    return HttpResponse("Created.")
+
+
+def create_pgsproject(request):
+    p, created = PGSProject2.objects.get_or_create(
+        name="Сайт магазина",
+        platforms={"client": "HTML, CSS, JS"},
+    )
+    print(p.platforms["client"])
     return HttpResponse("Created.")
