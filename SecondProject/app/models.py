@@ -12,7 +12,7 @@ from django.contrib.postgres.fields import (
     JSONField,
     RangeOperators,
 )
-from django.contrib.postgres.indexes import GistIndex
+from django.contrib.postgres.indexes import GistIndex, GinIndex
 from django.contrib.postgres.validators import (
     RangeMinValueValidator,
     RangeMaxValueValidator,
@@ -292,12 +292,9 @@ class PGSRoomReserving(models.Model):
     class Meta:
         indexes = [
             GistIndex(
-                fields=["name", "reserving"],
-                name="i_pgsrr_reserving",
-                opclasses=(
-                    "gist_trgm_ops",
-                    "range_ops",
-                ),
+                fields=["name"],
+                name="i_pgsrr_name_trgm",
+                opclasses=["gist_trgm_ops"],
                 fillfactor=50,
             )
         ]
@@ -305,10 +302,10 @@ class PGSRoomReserving(models.Model):
             ExclusionConstraint(
                 name="c_pgsrr_reserving",
                 expressions=[
-                    ("name", RangeOperators.EQUAL),
                     ("reserving", RangeOperators.EQUAL),
                 ],
                 condition=models.Q(cancelled=False),
+                index_type="gist",
             )
         ]
 
@@ -323,13 +320,13 @@ class PGSRubric(models.Model):
 
     class Meta:
         indexes = [
-            models.Index(
-                fields=("name", "description"),
-                name="i_pgsrubric_name_description",
-                opclasses=(
-                    "gist_trgm_ops",
-                    "gist_trgm_ops",
-                ),
+            GinIndex(
+                fields=["name", "description"],
+                name="i_pgsrubric_nd_gin",
+                opclasses=[
+                    "gin_trgm_ops",
+                    "gin_trgm_ops",
+                ],
             )
         ]
         constraints = [
