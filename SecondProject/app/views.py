@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import redirect_to_login
+from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 from django.core.paginator import Paginator
 from django.db import transaction, IntegrityError
 from django.db.models import (
@@ -995,3 +996,13 @@ def create_pgsproject(request):
     )
     print(p.platforms["client"])
     return HttpResponse("Created.")
+
+
+def pgs_search(request):
+    print(PGSRoomReserving.objects.filter(name__search="Hall"))
+    cr = SearchVector("name", "platforms__client")
+    q = SearchQuery("'магазин' | 'javascript'", search_type="raw")
+    result = PGSProject2.objects.annotate(rank=SearchRank(cr, q)).order_by("-rank")
+    for r in result:
+        print(r.name, ": ", r.rank)
+    return HttpResponse("Info in terminal.")
