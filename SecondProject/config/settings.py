@@ -27,18 +27,21 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    # Django core apps
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "app",
-    "accounts",
+    "django.contrib.postgres",
+    # Third-party apps
     "django_extensions",
     "captcha",
-    "django.contrib.postgres",
     "localflavor",
+    # Local apps
+    "accounts",
+    "app",
 ]
 
 MIDDLEWARE = [
