@@ -6,6 +6,7 @@ colorama==0.4.6
 cryptography==45.0.6
 Django==5.2.3
 django-extensions==4.1
+django-localflavor==5.0
 django-ranged-response==0.2.0
 django-simple-captcha==0.6.2
 dotenv==0.9.9
@@ -25,6 +26,7 @@ pyOpenSSL==25.1.0
 pytest==8.4.2
 pytest-django==4.11.1
 python-dotenv==1.1.1
+python-stdnum==2.2
 sqlparse==0.5.3
 typing_extensions==4.15.0
 tzdata==2025.2

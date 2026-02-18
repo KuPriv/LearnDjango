@@ -1,6 +1,6 @@
 @echo off
 
-set DJANGO_SETTINGS_MODULE=mysite.settings
+set DJANGO_SETTINGS_MODULE=config.settings
 set PYTHONPATH=.
 
 pytest

@@ -1,5 +1,6 @@
 {% extends 'basic.html' %}
 {% load static %}
+{% load filtersandtags %}
 
 {% block title %} Индекс {% endblock %}
 
@@ -19,6 +20,7 @@
 {{ 656564|filesizeformat }}
 {{ bbs.first.title|join:','}}
 {{ bbs.first.title|make_list}}
+{% lst ', ' '1' '2' '3' 'a' %}
 </br>
 <a href="{% url 'app:search_formset' %}"> Формсет поиск</a>
 <div>
@@ -36,7 +38,7 @@
 <body>
     <div class="{% cycle 'bb1' 'bb2' %}">
         <h2><a href="{% url 'app:detail' pk=bb.pk %}">{{ bb.title }}</a></h2>
-        <p>Прайс: {{ bb.price|default:'Нема цена'}}</p>
+        <p>Прайс: {{ bb.price|currency:'Нема цена'}}</p>
         <p> Контент: {{ bb.content|lower|capfirst|default:'--Описания нема--'}}</p>
         <p> Паблишед: {{ bb.created_at }}</p>
         <p> Обновлено: {{ bb.updated_at }}</p>
