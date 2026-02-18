@@ -90,4 +90,5 @@ urlpatterns = [
     ),
     path("pgs-rubric/create/", views.create_pgsrubric, name="pgs_rubric_create"),
     path("pgs-project/create/", views.create_pgsproject, name="pgs_project_create"),
+    path("pgs-search/hall/", views.pgs_search, name="pgs_search"),
 ]
