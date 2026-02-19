@@ -73,9 +73,10 @@ from django.views.generic import (
     RedirectView,
 )
 from django.views.generic.detail import SingleObjectMixin
+from django.conf import settings
 from psycopg2._range import DateTimeTZRange
 
-from .forms import BbForm, RegisterUserForm, SearchForm, CommentForm
+from .forms import BbForm, RegisterUserForm, SearchForm, CommentForm, ImgForm
 from .models import *
 
 
@@ -1006,3 +1007,66 @@ def pgs_search(request):
     for r in result:
         print(r.name, ": ", r.rank)
     return HttpResponse("Info in terminal.")
+
+
+def add_file(request):
+    if request.method == "POST":
+        form = ImgForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect("app:index")
+    else:
+        form = ImgForm()
+    context = {"form": form}
+
+    return render(request, "app/add_file.html", context)
+
+
+def delete_file(request, pk):
+    img = get_object_or_404(Img, pk=pk)
+    img.img.delete()
+    img.delete()
+    return redirect("app:index")
+
+
+def get_files_root():
+    FILES_ROOT = os.path.join(settings.BASE_DIR, "media/uploads")
+    os.makedirs(FILES_ROOT, exist_ok=True)
+    return FILES_ROOT
+
+
+"""def add_file_low_level(request):
+    FILES_ROOT = get_files_root()
+    if request.method == "POST":
+        form = ImgForm(request.POST, request.FILES)
+        if form.is_valid():
+            uploaded_file = request.FILES["img"]
+            fn = "%s%s" % (
+                datetime.now().timestamp(),
+                os.path.splitext(uploaded_file.name)[1],
+            )
+            fn = os.path.join(FILES_ROOT, fn)
+            with open(fn, "wb+") as destination:
+                for chunk in uploaded_file.chunks():
+                    destination.write(chunk)
+                return redirect("app:index")
+    else:
+        form = ImgForm()
+    context = {"form": form}
+    return render(request, "app/add_file.html", context)"""
+
+
+def index_files(request):
+    FILES_ROOT = get_files_root()
+    imgs = []
+    for entry in os.scandir(FILES_ROOT):
+        imgs.append(os.path.basename(entry))
+    context = {"imgs": imgs}
+
+    return render(request, "app/index_files.html", context)
+
+
+def get_files(request, filename):
+    FILES_ROOT = get_files_root()
+    fn = os.path.join(FILES_ROOT, filename)
+    return FileResponse(open(fn, "rb"), content_type="application/octet-stream")

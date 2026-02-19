@@ -1,0 +1,12 @@
+{% extends 'basic_files.html' %}
+{% load static %}
+
+{% block title %} Файлы {% endblock %}
+
+{% block content %}
+    {% for img in imgs %}
+    <div class="image">
+        <p><img src="{% url 'app:get_files' filename=img %}"></p>
+    </div>
+    {% endfor %}
+{% endblock %}

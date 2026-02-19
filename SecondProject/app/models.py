@@ -25,6 +25,8 @@ from django.core import validators
 from django.utils import timezone
 from django.core.validators import EmailValidator
 
+from .utils import get_timestamp_path
+
 
 class BbManager(models.Manager):
     def get_queryset(self):
@@ -354,3 +356,12 @@ class PGSProject2(models.Model):
             )
         ],
     )
+
+
+class Img(models.Model):
+    img = models.ImageField(verbose_name="Изображение", upload_to=get_timestamp_path)
+    desc = models.TextField(verbose_name="Описание")
+
+    class Meta:
+        verbose_name = "Изображение"
+        verbose_name_plural = "Изображения"
