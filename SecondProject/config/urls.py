@@ -8,6 +8,7 @@ urlpatterns = [
     path("", include("app.urls")),
     path("accounts/", include("accounts.urls")),
     path("captcha/", include("captcha.urls")),
+    path("social/", include("social_django.urls")),
 ]
 
 if settings.DEBUG:
