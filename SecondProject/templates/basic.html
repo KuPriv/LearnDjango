@@ -20,14 +20,19 @@
     <a href="{% url 'app:index_files' %}"> Файлы</a>
     <a href="{% url 'app:archive' %}"> Какие дни есть? </a>
     <a href="{% url 'app:rubric_set' %}">Список рубрик (формсет)</a>
+    <a href="{% url 'app:search' %}"> Поиск</a>
+    {% if not user.is_authenticated %}
     <a href="{% url 'accounts:login' %}"> Логин</a>
+    <a href="{% url 'social:begin' 'vk-oauth2' %}"> Войти через ВК</a>
+    {% endif %}
+    {% if user.is_authenticated %}
     <a href="{% url 'accounts:password_change' %}"> Смена пароля</a>
     <a href="{% url 'accounts:password_reset' %}"> Сброс пароля</a>
-    <a href="{% url 'app:search' %}"> Поиск</a>
     <form method="post" action="{% url 'accounts:logout' %}" style="display: inline;">
     {% csrf_token %}
     <button type="submit">Выйти</button>
     </form>
+    {% endif %}
     </br>
     </br>
     {% for rubric in rubrics %}
