@@ -76,3 +76,9 @@ class PGSRoomReservingAdmin(admin.ModelAdmin):
 class PGSRubricAdmin(admin.ModelAdmin):
     list_display = ("name", "description", "tags", "pk")
     actions = ["delete_selected"]
+
+
+@admin.register(Img)
+class ImgAdmin(admin.ModelAdmin):
+    list_display = ("img", "pk", "desc")
+    actions = ["delete_selected"]
