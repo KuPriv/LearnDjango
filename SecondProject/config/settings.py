@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "django_extensions",
     "captcha",
     "localflavor",
+    "django_cleanup",
     # Local apps
     "accounts",
     "app",
