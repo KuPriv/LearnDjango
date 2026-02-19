@@ -2,7 +2,7 @@
 
 call ..\venv\Scripts\activate
 
-set HOST=127.0.0.1
+set HOST=localhost
 set PORT=8000
 set CERT_FILE=localhost+2.pem
 SET CERT_KEY=localhost+2-key.pem
