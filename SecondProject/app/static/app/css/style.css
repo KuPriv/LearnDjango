@@ -6,3 +6,8 @@ input.delete {
     border: 1px solid red;
     background-color: black;
 }
+
+.image img {
+    width: 200px;
+    height: auto;
+}
