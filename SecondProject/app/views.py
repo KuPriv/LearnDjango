@@ -2,10 +2,12 @@ import logging
 import os
 from datetime import datetime, timezone, timedelta
 
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import redirect_to_login
+from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 from django.core.paginator import Paginator
 from django.db import transaction, IntegrityError
@@ -563,9 +565,11 @@ def check_resolve(request):
 def add(request): ...
 
 
-class BbCreateView(LoginRequiredMixin, CreateView):
+class BbCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     template_name = "app/create.html"
     model = Bb
+    success_url = "rubric/{rubric_id}"
+    success_message = 'Объявление о продаже товара "% (title)s" создано.'
     fields = ["title", "price", "rubric"]
     success_url = reverse_lazy("app:by_rubric")
 
@@ -730,6 +734,12 @@ def edit(request, pk):
         bbf = BbForm(request.POST, instance=bb)
         if bbf.is_valid():
             bbf.save()
+            messages.add_message(
+                request,
+                messages.SUCCESS,
+                "Объявление исправлено",
+                extra_tags="first second",
+            )
             return HttpResponseRedirect(
                 reverse(
                     "app:by_rubric", kwargs={"rubric_id": bbf.cleaned_data["rubric"].pk}
@@ -1078,3 +1088,13 @@ def hide_comment(request, comment_pk):
     comment.is_hidden = True
     comment.save()
     return redirect(request.META.get("HTTP_REFERER", "/"))
+
+
+def test_cookie(request):
+    visits = request.COOKIES.get("visits", 0)
+    visits = int(visits) + 1
+
+    response = HttpResponse(f"Ты посетил страницу {visits} раз")
+
+    response.set_cookie("visits", visits, max_age=3600)
+    return response
