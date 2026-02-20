@@ -10,6 +10,7 @@ from django.contrib.auth.views import redirect_to_login
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 from django.core.paginator import Paginator
+from django.core.signing import Signer, TimestampSigner, dumps, loads
 from django.db import transaction, IntegrityError
 from django.db.models import (
     F,
@@ -1098,3 +1099,18 @@ def test_cookie(request):
 
     response.set_cookie("visits", visits, max_age=3600)
     return response
+
+
+def check_signer(request):
+    signer = Signer()
+    val = signer.sign("Python")
+    print(val)
+    print(signer.unsign(val))
+    signer = TimestampSigner()
+    val = signer.sign("Python2")
+    print(val)
+    print(signer.unsign(val, max_age=timedelta(minutes=30)))
+    val = dumps(1234567)
+    print(val)
+    print(loads(val))
+    return HttpResponse("Checked.")
