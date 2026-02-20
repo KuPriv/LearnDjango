@@ -1070,3 +1070,11 @@ def get_files(request, filename):
     FILES_ROOT = get_files_root()
     fn = os.path.join(FILES_ROOT, filename)
     return FileResponse(open(fn, "rb"), content_type="application/octet-stream")
+
+
+@permission_required("app.hide_comments", raise_exception=True)
+def hide_comment(request, comment_pk):
+    comment = get_object_or_404(Comment, pk=comment_pk)
+    comment.is_hidden = True
+    comment.save()
+    return redirect(request.META.get("HTTP_REFERER", "/"))
