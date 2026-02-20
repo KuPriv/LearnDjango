@@ -636,7 +636,7 @@ class BbAddView(FormView):
 class BbEditView(UpdateView):
     model = Bb
     form_class = BbForm
-    success_url = "/app"
+    success_url = "/"
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
