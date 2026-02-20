@@ -95,4 +95,5 @@ urlpatterns = [
     path("index_files/", views.index_files, name="index_files"),
     path("get_files/<path:filename>", views.get_files, name="get_files"),
     path("test_cookie/", views.test_cookie, name="test_cookie"),
+    path("check_signer", views.check_signer, name="check_signer"),
 ]
