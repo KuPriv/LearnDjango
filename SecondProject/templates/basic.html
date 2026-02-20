@@ -39,6 +39,13 @@
     <a href="{% url 'app:by_rubric' rubric.pk %}"> {{ rubric.name }}</a>
     {% endfor %}
 </nav>
+{% if messages %}
+{% for message in messages %}
+    <div class="alert {{ message.tags }}">
+        {{ message }}
+    </div>
+{% endfor %}
+{% endif %}
 <section>
     {% block content %}
     Текст из basic.html <--
