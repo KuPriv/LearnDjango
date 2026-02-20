@@ -14,7 +14,7 @@ class SearchForm(forms.Form):
     required_css_class = "required"
 
 
-class BbForm(ModelForm):
+class BbFormSimple(ModelForm):
     class Meta:
         model = Bb
         fields = ("title", "content", "price", "rubric")
@@ -30,7 +30,7 @@ class BbForm(ModelForm):
 
 
 class BbForm(forms.ModelForm):
-    price = forms.DecimalField(label="Цена", decimal_places=2)
+    price = forms.IntegerField(label="Цена")
     rubric = forms.ModelChoiceField(
         queryset=Rubric.objects.all(),
         label="Рубрика",
@@ -49,10 +49,10 @@ class BbForm(forms.ModelForm):
     def clean(self):
         super().clean()
         errors = {}
-        if not self.cleaned_data["content"]:
-            errors.content = ValidationError("Описания нет.")
-        if self.cleaned_data["price"] < 0:
-            errors.price = ValidationError("Цена не может быть меньше 0")
+        if not self.cleaned_data.get("content"):
+            errors["content"] = ValidationError("Описания нет.")
+        if self.cleaned_data.get("price") and self.cleaned_data["price"] < 0:
+            errors["price"] = ValidationError("Цена не может быть меньше 0")
 
         if errors:
             raise ValidationError(errors)

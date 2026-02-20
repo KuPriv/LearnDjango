@@ -2,12 +2,15 @@ import logging
 import os
 from datetime import datetime, timezone, timedelta
 
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import redirect_to_login
+from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 from django.core.paginator import Paginator
+from django.core.signing import Signer, TimestampSigner, dumps, loads
 from django.db import transaction, IntegrityError
 from django.db.models import (
     F,
@@ -563,9 +566,11 @@ def check_resolve(request):
 def add(request): ...
 
 
-class BbCreateView(LoginRequiredMixin, CreateView):
+class BbCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     template_name = "app/create.html"
     model = Bb
+    success_url = "rubric/{rubric_id}"
+    success_message = 'Объявление о продаже товара "% (title)s" создано.'
     fields = ["title", "price", "rubric"]
     success_url = reverse_lazy("app:by_rubric")
 
@@ -632,7 +637,7 @@ class BbAddView(FormView):
 class BbEditView(UpdateView):
     model = Bb
     form_class = BbForm
-    success_url = "/app"
+    success_url = "/"
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
@@ -730,6 +735,12 @@ def edit(request, pk):
         bbf = BbForm(request.POST, instance=bb)
         if bbf.is_valid():
             bbf.save()
+            messages.add_message(
+                request,
+                messages.SUCCESS,
+                "Объявление исправлено",
+                extra_tags="first second",
+            )
             return HttpResponseRedirect(
                 reverse(
                     "app:by_rubric", kwargs={"rubric_id": bbf.cleaned_data["rubric"].pk}
@@ -1070,3 +1081,36 @@ def get_files(request, filename):
     FILES_ROOT = get_files_root()
     fn = os.path.join(FILES_ROOT, filename)
     return FileResponse(open(fn, "rb"), content_type="application/octet-stream")
+
+
+@permission_required("app.hide_comments", raise_exception=True)
+def hide_comment(request, comment_pk):
+    comment = get_object_or_404(Comment, pk=comment_pk)
+    comment.is_hidden = True
+    comment.save()
+    return redirect(request.META.get("HTTP_REFERER", "/"))
+
+
+def test_cookie(request):
+    visits = request.COOKIES.get("visits", 0)
+    visits = int(visits) + 1
+
+    response = HttpResponse(f"Ты посетил страницу {visits} раз")
+
+    response.set_cookie("visits", visits, max_age=3600)
+    return response
+
+
+def check_signer(request):
+    signer = Signer()
+    val = signer.sign("Python")
+    print(val)
+    print(signer.unsign(val))
+    signer = TimestampSigner()
+    val = signer.sign("Python2")
+    print(val)
+    print(signer.unsign(val, max_age=timedelta(minutes=30)))
+    val = dumps(1234567)
+    print(val)
+    print(loads(val))
+    return HttpResponse("Checked.")

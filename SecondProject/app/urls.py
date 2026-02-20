@@ -53,7 +53,7 @@ urlpatterns = [
     ),
     path("list/<int:rubric_id>", BbByRubricViewList.as_view(), name="list"),
     path("add_form/", BbAddView.as_view(), name="add_form"),
-    path("edit/<int:pk>", BbEditView.as_view(), name="edit"),
+    path("edit/<int:pk>", views.edit, name="edit"),
     path("delete<int:pk>", BbDeleteView.as_view(), name="delete"),
     path("archive/", BbIndexView.as_view(), name="archive"),
     path(
@@ -94,4 +94,6 @@ urlpatterns = [
     path("add_file/", views.add_file, name="add_file"),
     path("index_files/", views.index_files, name="index_files"),
     path("get_files/<path:filename>", views.get_files, name="get_files"),
+    path("test_cookie/", views.test_cookie, name="test_cookie"),
+    path("check_signer", views.check_signer, name="check_signer"),
 ]
