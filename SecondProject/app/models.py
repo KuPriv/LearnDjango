@@ -274,6 +274,13 @@ class Comment(models.Model):
     )
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
+    class Meta:
+        permissions = [
+            ("hide_comments", "Можно скрывать комментарии"),
+        ]
+        # all types of default permissions
+        default_permissions = ("view", "add", "change", "delete")
+
     def __str__(self):
         return f"{self.user.username} оставил {self.comment} in {self.bb}"
 
