@@ -55,7 +55,7 @@ urlpatterns = [
     path("add_form/", BbAddView.as_view(), name="add_form"),
     path("edit/<int:pk>", views.edit, name="edit"),
     path("delete<int:pk>", BbDeleteView.as_view(), name="delete"),
-    path("archive/", BbIndexView.as_view(), name="archive"),
+    path("archive/", cache_page(60 * 5)(BbIndexView.as_view()), name="archive"),
     path(
         "<int:year>/",
         YearArchiveView.as_view(
