@@ -3,6 +3,7 @@ import os
 from datetime import datetime, timezone, timedelta
 
 from django.contrib import messages
+from django.core.cache import cache
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -62,7 +63,9 @@ from django.db.models.functions import (
 from django.shortcuts import render, get_object_or_404, get_list_or_404, redirect
 from django.urls import reverse, reverse_lazy, resolve
 from django.views import View
+from django.views.decorators.cache import cache_page
 from django.views.decorators.http import require_http_methods
+from django.views.decorators.vary import vary_on_headers, vary_on_cookie
 from django.views.generic import (
     ListView,
     CreateView,
@@ -83,6 +86,8 @@ from .forms import BbForm, RegisterUserForm, SearchForm, CommentForm, ImgForm
 from .models import *
 
 
+# @vary_on_headers("User-Agent")
+@cache_page(60 * 5)
 def index(request):
     """success_url = reverse_lazy("index")
     resp_content = ("Здесь ", "будет ", "главная ", "страница ", "сайта!")
@@ -492,6 +497,7 @@ class RubricListView(ListView):
     context_object_name = "rubrics"
 
 
+@cache_page(60 * 5)
 def by_rubric(request, rubric_id):
     print(
         request.method,
@@ -1114,3 +1120,42 @@ def check_signer(request):
     print(val)
     print(loads(val))
     return HttpResponse("Checked.")
+
+
+@vary_on_headers("Cookie")
+def user_profile(request): ...
+
+
+@vary_on_headers("User-Agent", "Cookie")
+def user_account(request): ...
+
+
+@vary_on_cookie
+def user_profile(request): ...
+
+
+def test_cache(request):
+    cache.set("rubrics", Rubric.objects.all())
+    cache.set("rurbics_sorted", Rubric.objects.order_by("name"), timeout=240)
+    rubrics_sorted = cache.get("rubrrics_sorted")
+    rubrics = cache.get("rubrics", Rubric.objects.all())
+
+    rubrics = cache.get_or_set("rubrics", Rubric.objects.all(), 240)
+
+    if "rubrics_sorted" in cache:
+        ...
+
+    cache.delete("rubrics")
+
+    data = {
+        "rurbrics": Rubric.objects.all(),
+        "rurbics_sorted": Rubric.objects.order_by("name"),
+    }
+
+    cache.set_many(data, timeout=600)
+
+    data = cache.get_many(["rubrics", "rubrics_sorted"])
+    rubrics = data["rubrics"]
+    rubrics_sorted = data["rubrics_sorted"]
+
+    cache.touch("rubrics", timeout=240)
