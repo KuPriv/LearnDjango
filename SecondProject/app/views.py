@@ -63,8 +63,8 @@ from django.db.models.functions import (
 from django.shortcuts import render, get_object_or_404, get_list_or_404, redirect
 from django.urls import reverse, reverse_lazy, resolve
 from django.views import View
-from django.views.decorators.cache import cache_page
-from django.views.decorators.http import require_http_methods
+from django.views.decorators.cache import cache_page, cache_control, never_cache
+from django.views.decorators.http import require_http_methods, condition, last_modified
 from django.views.decorators.vary import vary_on_headers, vary_on_cookie
 from django.views.generic import (
     ListView,
@@ -531,7 +531,7 @@ def add_bb_and_save(request):
         return render(request, "app/create.html", context)
 
 
-def detailw(request, bb_id):
+def detail(request, bb_id):
     try:
         bb = Bb.objects.get(pk=bb_id)
     except Bb.DoesNotExist:
@@ -1159,3 +1159,40 @@ def test_cache(request):
     rubrics_sorted = data["rubrics_sorted"]
 
     cache.touch("rubrics", timeout=240)
+
+    # Redis примеры дальше
+    cache.set("rubrics", Rubric.objects.all(), timeout=None)
+    cache.ttl("rubrics")
+    cache.expire("rubrics", timeout=300)
+    cache.persist("rubrics")
+
+    cache.set("rubric1", "1")
+    cache.set("rubric2", "2")
+    cache.set("rubric22", "22")
+    # поиск по шаблону вывод массивом ключей
+    cache.keys("rubric?")
+    cache.delete_pattern("...")
+
+
+def bb_lmf(request, pk):
+    return Bb.objects.get(pk=pk).published
+
+
+@condition(last_modified_func=bb_lmf)
+def detail3(request, pk): ...
+
+
+@last_modified(bb_lmf)
+def detail3(request, pk): ...
+
+
+@cache_control(max_age=3600)
+def detail3(request, pk): ...
+
+
+@cache_control(private=True)
+def account(request, user_pk): ...
+
+
+@never_cache
+def fresh_news(request): ...
