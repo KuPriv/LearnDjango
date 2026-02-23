@@ -188,6 +188,7 @@ CAPTCHA_FONT_SIZE = 32
 # Cache
 CACHES = {
     "default": {
-        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://localhost:6379/0",
     }
 }
