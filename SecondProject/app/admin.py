@@ -18,10 +18,24 @@ class RubricAdmin(admin.ModelAdmin):
     list_display = ("name", "pk")
     actions = ["delete_selected"]
 
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        else:
+            return qs.filter(is_hidden=False)
+
 
 @admin.register(Magazine)
 class MagazineAdmin(admin.ModelAdmin):
-    list_display = ("title",)
+    def get_list_display(self, request):
+        ld = ("title", "price")
+        if request.user.is_superuser:
+            ld += ["published", "rubric"]
+        return ld
+
+    list_display_links = ("title",)
+    list_editable = ("rubric",)
     actions = ["delete_selected"]
 
 
