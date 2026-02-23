@@ -1175,7 +1175,10 @@ def test_cache(request):
 
 
 def bb_lmf(request, pk):
-    return Bb.objects.get(pk=pk).published
+    print("bb_lmf called!")
+    bb = Bb.objects.get(pk=pk)
+    print(bb.__dict__)
+    return None
 
 
 @condition(last_modified_func=bb_lmf)
