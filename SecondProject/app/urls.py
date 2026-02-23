@@ -45,7 +45,11 @@ urlpatterns = [
         BbByRubricView.as_view(),
         name="bb_by_rubric",
     ),
-    path("detail/<int:pk>", BbDetailView.as_view(), name="detail"),
+    path(
+        "detail/<int:pk>",
+        condition(last_modified_func=views.bb_lmf)(BbDetailView.as_view()),
+        name="detail",
+    ),
     path(
         "detail/<int:year>/<int:month>/<int:day>/<int:pk>",
         BbRedirectView.as_view(),
