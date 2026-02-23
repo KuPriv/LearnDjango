@@ -35,7 +35,7 @@ urlpatterns = [
     path("rubric/<int:rubric_id>", views.by_rubric, name="by_rubric"),
     path("add/", views.add_bb_and_save, name="add"),
     path("send_file/", views.send_file, name="send_file"),
-    path("detail/<int:bb_id>", views.detail, name="detail"),
+    # path("detail/<int:bb_id>", views.detail, name="detail"),
     path("detail2/<int:rubric_id>", views.detail2, name="detail2"),
     path("check_resolve", views.check_resolve, name="check_resolve"),
     # re_path - шаблонные выражения, как и re в Python
