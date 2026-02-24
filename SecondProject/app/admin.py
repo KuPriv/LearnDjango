@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django import forms
 from .models import *
 
 admin.site.register(Measure)
@@ -38,18 +39,14 @@ class SpareAdmin(admin.ModelAdmin):
 class RubricAdmin(admin.ModelAdmin):
     list_display = ("name", "pk", "super_rubric")
     fields = ("name", "super_rubric")
-
-    def super_rubric(self, rec):
-        return rec.super_rubric.name
-
-    super_rubric.empty_value_display = "[нет]"
+    search_fields = ("name",)
 
     def get_queryset(self, request):
-        qs = super().get_queryset(request)
-        if request.user.is_superuser:
-            return qs
-        else:
+        qs = super().get_queryset(request).select_related("super_rubric")
+        if not request.user.is_superuser:
             return qs.filter(is_hidden=False)
+
+        return qs
 
     actions = ["delete_selected"]
 
@@ -104,6 +101,13 @@ class BbAdmin(admin.ModelAdmin):
     list_filter = (PriceListFilter,)
     search_fields = ("title", "content")
     date_hierarchy = "created_at"
+    radio_fields = {"rubric": admin.VERTICAL}
+    autocomplete_fields = ("rubric",)
+    db_index = True
+    formfield_overrides = {
+        models.ForeignKey: {"widget": forms.widgets.Select(attrs={"size": 8})},
+    }
+    prepopulated_fields = {"slug": ("title",)}
 
     def get_fields(self, request, obj=None):
         f = ["title", "content", "price"]
@@ -125,6 +129,11 @@ class KitInline(admin.TabularInline):
 @admin.register(Machine)
 class MachineAdmin(admin.ModelAdmin):
     inlines = [KitInline]
+
+
+@admin.register(Machine2)
+class Machine2Admin(admin.ModelAdmin):
+    filter_horizontal = ("spares",)
 
 
 @admin.register(Kit)
