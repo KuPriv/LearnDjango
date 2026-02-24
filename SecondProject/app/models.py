@@ -209,6 +209,7 @@ class Magazine(models.Model):
     title = models.CharField(
         max_length=30, error_messages={"invalid": "Incorrectly name"}
     )
+    content = models.TextField(null=True, blank=True, default=None)
     published = models.DateTimeField(auto_now_add=True)
     price = models.FloatField(default=0)
     rubric = models.ForeignKey("Rubric", on_delete=models.PROTECT)
