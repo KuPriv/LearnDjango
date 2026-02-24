@@ -35,7 +35,7 @@ urlpatterns = [
     path("rubric/<int:rubric_id>", views.by_rubric, name="by_rubric"),
     path("add/", views.add_bb_and_save, name="add"),
     path("send_file/", views.send_file, name="send_file"),
-    path("detailw/<int:bb_id>", views.detailw, name="detailw"),
+    # path("detail/<int:bb_id>", views.detail, name="detail"),
     path("detail2/<int:rubric_id>", views.detail2, name="detail2"),
     path("check_resolve", views.check_resolve, name="check_resolve"),
     # re_path - шаблонные выражения, как и re в Python
@@ -45,7 +45,11 @@ urlpatterns = [
         BbByRubricView.as_view(),
         name="bb_by_rubric",
     ),
-    path("detail/<int:pk>", BbDetailView.as_view(), name="detail"),
+    path(
+        "detail/<int:pk>",
+        condition(last_modified_func=views.bb_lmf)(BbDetailView.as_view()),
+        name="detail",
+    ),
     path(
         "detail/<int:year>/<int:month>/<int:day>/<int:pk>",
         BbRedirectView.as_view(),
@@ -55,7 +59,7 @@ urlpatterns = [
     path("add_form/", BbAddView.as_view(), name="add_form"),
     path("edit/<int:pk>", views.edit, name="edit"),
     path("delete<int:pk>", BbDeleteView.as_view(), name="delete"),
-    path("archive/", BbIndexView.as_view(), name="archive"),
+    path("archive/", cache_page(60 * 5)(BbIndexView.as_view()), name="archive"),
     path(
         "<int:year>/",
         YearArchiveView.as_view(

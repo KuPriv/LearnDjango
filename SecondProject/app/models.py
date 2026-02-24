@@ -172,14 +172,6 @@ class Board(models.Model):
         return Rubric.objects.filter(entry__title="Home")
 
 
-class AdvUser(models.Model):
-    is_activated = models.BooleanField(default=True)
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    email = models.EmailField(
-        blank=True, validators=[EmailValidator(message="Invalid email")]
-    )
-
-
 class Spare(models.Model):
     name = models.CharField(max_length=30)
 
