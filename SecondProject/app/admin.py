@@ -28,14 +28,16 @@ class RubricAdmin(admin.ModelAdmin):
 
 @admin.register(Magazine)
 class MagazineAdmin(admin.ModelAdmin):
-    def get_list_display(self, request):
-        ld = ("title", "price")
-        if request.user.is_superuser:
-            ld += ["published", "rubric"]
-        return ld
-
+    list_display = ("title", "rubric")
     list_display_links = ("title",)
     list_editable = ("rubric",)
+
+    def get_list_display(self, request):
+        ld = ("title", "price", "rubric")
+        if request.user.is_superuser:
+            ld += ("published",)
+        return ld
+
     actions = ["delete_selected"]
 
 
