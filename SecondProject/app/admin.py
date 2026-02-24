@@ -5,6 +5,27 @@ admin.site.register(Measure)
 admin.site.register(SuperRubric)
 admin.site.register(Message)
 admin.site.register(PrivateMessage)
+admin.site.empty_value_display = "(пусто)"
+
+
+class PriceListFilter(admin.SimpleListFilter):
+    title = "Категория цен"
+    parameter_name = "price"
+
+    def lookups(self, request, model_admin):
+        return (
+            ("low", "Низкая цена"),
+            ("medium", "Средняя цена"),
+            ("high", "Высокая цена"),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == "low":
+            return queryset.filter(price__lt=500)
+        elif self.value() == "medium":
+            return queryset.filter(price__gte=500, price__lte=5000)
+        elif self.value() == "high":
+            return queryset.filter(price__gt=5000)
 
 
 @admin.register(Spare)
@@ -15,8 +36,13 @@ class SpareAdmin(admin.ModelAdmin):
 
 @admin.register(Rubric)
 class RubricAdmin(admin.ModelAdmin):
-    list_display = ("name", "pk")
-    actions = ["delete_selected"]
+    list_display = ("name", "pk", "super_rubric")
+    fields = ("name", "super_rubric")
+
+    def super_rubric(self, rec):
+        return rec.super_rubric.name
+
+    super_rubric.empty_value_display = "[нет]"
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
@@ -24,6 +50,8 @@ class RubricAdmin(admin.ModelAdmin):
             return qs
         else:
             return qs.filter(is_hidden=False)
+
+    actions = ["delete_selected"]
 
 
 @admin.register(Magazine)
@@ -56,6 +84,11 @@ class BbAdmin(admin.ModelAdmin):
         "updated_at",
         "pk",
     )
+    list_filter = (PriceListFilter,)
+    search_fields = ("title", "content")
+    date_hierarchy = "created_at"
+
+    empty_value_display = "---"
     actions = ["delete_selected"]
 
 
