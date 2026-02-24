@@ -107,7 +107,6 @@ class BbAdmin(admin.ModelAdmin):
     formfield_overrides = {
         models.ForeignKey: {"widget": forms.widgets.Select(attrs={"size": 8})},
     }
-    prepopulated_fields = {"slug": ("title",)}
 
     def get_fields(self, request, obj=None):
         f = ["title", "content", "price"]
