@@ -59,6 +59,23 @@ class MagazineAdmin(admin.ModelAdmin):
     list_display = ("title", "rubric")
     list_display_links = ("title",)
     list_editable = ("rubric",)
+    readonly_fields = ("published",)
+    fieldsets = (
+        (
+            None,
+            {
+                "fields": (("title", "rubric"), "content"),
+                "classes": ("wide",),
+            },
+        ),
+        (
+            "Дополнительные сведения",
+            {
+                "fields": ("price",),
+                "description": "Параметры, необязательные для указания",
+            },
+        ),
+    )
 
     def get_list_display(self, request):
         ld = ("title", "price", "rubric")
@@ -88,6 +105,14 @@ class BbAdmin(admin.ModelAdmin):
     search_fields = ("title", "content")
     date_hierarchy = "created_at"
 
+    def get_fields(self, request, obj=None):
+        f = ["title", "content", "price"]
+        if not obj:
+            f.append("rubric")
+        return f
+
+    # либо задаем те поля, которые выводятся, либо те, которые не выводятся.
+    # exclude = ("kind3",)
     empty_value_display = "---"
     actions = ["delete_selected"]
 
