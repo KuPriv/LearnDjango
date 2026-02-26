@@ -38,7 +38,7 @@ class BbForm(forms.ModelForm):
         widget=forms.widgets.Select(attrs={"size": 8}),
     )
     calendar_field = forms.DateField(
-        label="Дата", widget=forms.SelectDateWidget(years=(2000 + i for i in range(30)))
+        label="Дата", widget=forms.SelectDateWidget(years=(2000 + i for i in range(25)))
     )
     # text = forms.CharField(widget=forms.Textarea)
     checkbox = forms.BooleanField(

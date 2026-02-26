@@ -179,6 +179,20 @@ class Spare(models.Model):
         return self.name
 
 
+class Machine2(models.Model):
+    name = models.CharField(max_length=30)
+    spares = models.ManyToManyField(Spare)
+    notes = GenericRelation("Note")
+
+    def clean(self):
+        errors = {}
+        if not self.name:
+            errors["name"] = ValidationError("Укажите название")
+
+    def __str__(self):
+        return self.name
+
+
 class Machine(models.Model):
     name = models.CharField(max_length=30)
     spares = models.ManyToManyField(
@@ -209,6 +223,7 @@ class Magazine(models.Model):
     title = models.CharField(
         max_length=30, error_messages={"invalid": "Incorrectly name"}
     )
+    content = models.TextField(null=True, blank=True, default=None)
     published = models.DateTimeField(auto_now_add=True)
     price = models.FloatField(default=0)
     rubric = models.ForeignKey("Rubric", on_delete=models.PROTECT)
