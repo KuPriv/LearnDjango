@@ -1,5 +1,8 @@
 from django.contrib import admin
 from django import forms
+from django.db.models import F
+from django.urls import reverse
+
 from .models import *
 
 admin.site.register(Measure)
@@ -114,10 +117,25 @@ class BbAdmin(admin.ModelAdmin):
             f.append("rubric")
         return f
 
+    def view_on_site(self, rec):
+        return reverse("app:detail", kwargs={"pk": rec.pk})
+
+    def discount(self, request, queryset):
+        f = F("price")
+        for rec in queryset:
+            rec.price = f / 2
+            rec.save()
+        self.message_user(request, "Действие выполнено")
+
+    discount.short_description = "Уменьшить цену вдвое"
+
     # либо задаем те поля, которые выводятся, либо те, которые не выводятся.
     # exclude = ("kind3",)
     empty_value_display = "---"
-    actions = ["delete_selected"]
+    actions = [
+        "delete_selected",
+        "discount",
+    ]
 
 
 class KitInline(admin.TabularInline):
