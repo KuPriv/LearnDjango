@@ -1199,3 +1199,7 @@ def account(request, user_pk): ...
 
 @never_cache
 def fresh_news(request): ...
+
+
+def rubrics_client(request):
+    return render(request, "app/rubrics.html")

@@ -9,6 +9,7 @@ urlpatterns = [
     path("accounts/", include("accounts.urls")),
     path("captcha/", include("captcha.urls")),
     path("social/", include("social_django.urls")),
+    path("api/", include("api.urls")),
 ]
 
 if settings.DEBUG:
