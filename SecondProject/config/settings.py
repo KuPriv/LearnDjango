@@ -42,12 +42,16 @@ INSTALLED_APPS = [
     "localflavor",
     "django_cleanup",
     "social_django",
+    "rest_framework",
+    "corsheaders",
     # Local apps
     "accounts",
     "app",
+    "api",
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -195,3 +199,9 @@ CACHES = {
         },
     }
 }
+
+# Cors Settings.
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:8000",
+]
+CORS_ALLOW_ALL_ORIGINS = DEBUG
