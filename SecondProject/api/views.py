@@ -44,38 +44,11 @@ def api_rubric_detail(request, pk):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class APIRubrics(APIView):
-    def get(self, request):
-        rubrics = Rubric.objects.all()
-        serializer = RubricSerializer(rubrics, many=True)
-        return Response(serializer.data)
-
-    def post(self, request):
-        serializer = RubricSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class APIRubrics(generics.ListCreateAPIView):
+    queryset = Rubric.objects.all()
+    serializer_class = RubricSerializer
 
 
-class APIRubricDetail(APIView):
-    def get_object(self, pk):
-        return get_object_or_404(Rubric, pk=pk)
-
-    def get(self, request, pk):
-        rubric = self.get_object(pk)
-        serializer = RubricSerializer(rubric)
-        return Response(serializer.data)
-
-    def put(self, request, pk):
-        rubric = self.get_object(pk)
-        serializer = RubricSerializer(rubric, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, pk):
-        rubric = self.get_object(pk)
-        rubric.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+class APIRubricDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Rubric.objects.all()
+    serializer_class = RubricSerializer
