@@ -1,8 +1,14 @@
-from django.urls import path
-from .views import api_rubrics, api_rubric_detail, APIRubrics, APIRubricDetail
+from django.urls import path, include
+
+from rest_framework.routers import DefaultRouter
+
+from .views import APIRubricViewSet
+
+
+router = DefaultRouter()
+router.register("rubrics", APIRubricViewSet)
 
 app_name = "api"
 urlpatterns = [
-    path("rubrics/<int:pk>/", APIRubricDetail.as_view(), name="rubric_detail"),
-    path("rubrics/", APIRubrics.as_view(), name="api_rubrics"),
+    path("", include(router.urls)),
 ]
