@@ -202,3 +202,63 @@ CACHES = {
 
 # Cors Settings.
 CORS_ALLOW_ALL_ORIGINS = DEBUG
+
+
+# Django Rest Framework
+REST_FRAMEWORK = {
+    "DEFAULT_PERMISSION_CLASSES": (
+        "rest_framework.permissions.IsAuthenticatedOrReadOnly",
+    )
+}
+
+
+# logging
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "filters": {
+        "require_debug_false": {
+            "()": "django.utils.log.RequireDebugFalse",
+        },
+        "require_debug_true": {
+            "()": "django.utils.log.RequireDebugTrue",
+        },
+    },
+    "formatters": {
+        "simple": {
+            "format": "[%(asctime)s] %(levelname)s: %(message)s",
+            "datefmt": "%Y.%m.%d %H:%M:%S",
+        }
+    },
+    "handlers": {
+        "console_dev": {
+            "class": "logging.StreamHandler",
+            "formatter": "simple",
+            "filters": ["require_debug_true"],
+        },
+        "console_prod": {
+            "class": "logging.StreamHandler",
+            "formatter": "simple",
+            "level": "ERROR",
+            "filters": ["require_debug_false"],
+        },
+        "file": {
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": BASE_DIR / "logs" / "django.log",
+            "maxBytes": 1024 * 1024 * 10,
+            "backupCount": 10,
+            "formatter": "simple",
+            "filters": ["require_debug_false"],
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console_dev", "console_prod"],
+        },
+        "django.server": {
+            "handlers": ["file"],
+            "level": "INFO",
+            "propagate": True,
+        },
+    },
+}
